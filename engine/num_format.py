@@ -14,4 +14,4 @@ def abbreviate_number(num):
         num /= 1000.0
         magnitude += 1
 
-    return f"{num:.1f}{suffixes[magnitude]}" if num % 1 else f"{int(num)}{suffixes[magnitude]}"
+    return f"{num:.2f}{suffixes[magnitude]}" if num % 1 else f"{int(num)}{suffixes[magnitude]}"

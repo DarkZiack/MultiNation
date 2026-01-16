@@ -1,23 +1,16 @@
 {
-    "Meow": {
-        "name": "Meow",
+    "Cat": {
+        "name": "Cat",
+        "population": 1980000,
+        "area": 100,
+        "commercial": 5000000000,
+        "world_region": "Novara"
+    },
+    "Cat2": {
+        "name": "Cat2",
         "population": 1000000,
         "area": 100,
         "commercial": 5000000000,
-        "world_region": "Aurelia"
-    },
-    "Meow2": {
-        "name": "Meow2",
-        "population": "Aurelia",
-        "area": 100,
-        "commercial": 1000000,
-        "world_region": 5000000000
-    },
-    "Meow3": {
-        "name": "Meow3",
-        "population": "Aurelia",
-        "area": 100,
-        "commercial": 1000000,
-        "world_region": 5000000000
+        "world_region": "Novara"
     }
 }
