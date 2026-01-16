@@ -3,6 +3,10 @@ from data.save_load import load_nation, save_nation
 from engine.num_format import abbreviate_number
 from engine.world import regions
 
+area = 100
+population = 1000000
+commercial = 5000000000
+
 def get_nation_info(nation_obj):
     return {
         "name": nation_obj.name,
@@ -13,7 +17,7 @@ def get_nation_info(nation_obj):
     }
 
 def get_nation_display(nation_obj):
-    return f"{nation_obj.name}: Population {nation_obj.population}, Area {nation_obj.area} sq km, GDP {nation_obj.commercial}, Region {nation_obj.world_region}"
+    return f"{nation_obj.name}: Population {abbreviate_number(nation_obj.population)}, Area {abbreviate_number(nation_obj.area)} sq km, GDP {abbreviate_number(nation_obj.commercial)}, Region {nation_obj.world_region}"
 # Get user input
 name = input("Enter nation name: ")
 if name == "":
@@ -21,17 +25,11 @@ if name == "":
     exit(1)
 print(f"Available regions: {regions()}\n")
 world_region = "Aurelia"
-area = 100
-population = 1000000
-commercial = 5000000000
+
 # Save and load nation to demonstrate functionality
-nation_obj = nation(name, world_region, area, population, commercial)
+nation_obj = nation(name, population, area, commercial, world_region)
 
 load_nation("nations_save.json", name)
-
-
-# Create nation object
-nation_obj = nation(name, world_region, area, population, commercial)
 
 # Display the nation
 print(get_nation_display(nation_obj))

@@ -1,10 +1,10 @@
 {
     "Meow": {
         "name": "Meow",
-        "population": "Aurelia",
+        "population": 1000000,
         "area": 100,
-        "commercial": 1000000,
-        "world_region": 5000000000
+        "commercial": 5000000000,
+        "world_region": "Aurelia"
     },
     "Meow2": {
         "name": "Meow2",
