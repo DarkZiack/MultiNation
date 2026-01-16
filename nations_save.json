@@ -1,0 +1,23 @@
+{
+    "Meow": {
+        "name": "Meow",
+        "population": "Aurelia",
+        "area": 100,
+        "commercial": 1000000,
+        "world_region": 5000000000
+    },
+    "Meow2": {
+        "name": "Meow2",
+        "population": "Aurelia",
+        "area": 100,
+        "commercial": 1000000,
+        "world_region": 5000000000
+    },
+    "Meow3": {
+        "name": "Meow3",
+        "population": "Aurelia",
+        "area": 100,
+        "commercial": 1000000,
+        "world_region": 5000000000
+    }
+}
