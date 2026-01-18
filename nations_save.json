@@ -1,7 +1,7 @@
 {
     "Cat": {
         "name": "Cat",
-        "population": 1980000,
+        "population": 4025000,
         "area": 100,
         "commercial": 5000000000,
         "world_region": "Novara"
@@ -12,5 +12,26 @@
         "area": 100,
         "commercial": 5000000000,
         "world_region": "Novara"
+    },
+    "Novosibirsk": {
+        "name": "Novosibirsk",
+        "population": 1000000,
+        "area": 100,
+        "commercial": 5000000000,
+        "world_region": "Nordhelm"
+    },
+    "Maskun": {
+        "name": "Maskun",
+        "population": 1000000,
+        "area": 100,
+        "commercial": 5000000000,
+        "world_region": "Zayeth"
+    },
+    "The North Council": {
+        "name": "The North Council",
+        "population": 1000000,
+        "area": 100,
+        "commercial": 5000000000,
+        "world_region": "Nordhelm"
     }
 }
