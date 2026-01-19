@@ -1,12 +1,24 @@
 {
     "Meow": {
         "name": "Meow",
-        "population": 2000000,
-        "population_density": 20000.0,
-        "income": 5000285000,
-        "gdp": 1825104025000,
-        "gdp_per_capita": 912552.0125,
-        "area": 100,
+        "population": 5600001,
+        "population_density": 5600.001,
+        "income": 1771280316.3000002,
+        "commerce": 3163,
+        "gdp": 646517315449.5001,
+        "gdp_per_capita": 115449.50000000001,
+        "area": 1000,
+        "world_region": "Nordhelm"
+    },
+    "Moe": {
+        "name": "Moe",
+        "population": 1400000,
+        "population_density": 1400.0,
+        "income": 442820000.0,
+        "commerce": 3163,
+        "gdp": 161629300000.0,
+        "gdp_per_capita": 1.5,
+        "area": 1000,
         "world_region": "Aurelia"
     }
 }

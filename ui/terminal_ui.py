@@ -1,6 +1,7 @@
 import pygame
 import os
 import json
+import math
 
 from data.nation import nation
 from data.save_load import load_nation, save_nation
@@ -74,7 +75,7 @@ while not setup_done:
                     region_index = (region_index + 1) % len(available_regions)
                 elif event.key == pygame.K_RETURN:
                     selected_region = available_regions[region_index]
-                    nation_obj = nation(input_text.strip(), 1_000_000, 100, 5_000_000_000, 5_000_000_000, 5_000_000_000, selected_region)
+                    nation_obj = nation(input_text.strip(), 1000000, 1000, 100, 100, 100, 100, selected_region)
                     setup_done = True
 
     # ---- Draw input interface ----
@@ -109,9 +110,24 @@ while running:
     if timer == 62:
         timer_minute += 1
         timer = 0
-    nation_obj.update_economy(nation_obj.income + 1000)
+    # ---- Economic growth ----
+    
+    nation_obj.income = (nation_obj.population * nation_obj.commerce * 0.1)
+    nation_obj.commerce = math.ceil(100 * math.sqrt((100*5)+(500)))
+    nation_obj.gdp = (nation_obj.income * 365)
+    nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
+    
+    
+    
+    
+    # ---- Population Stats ----
+    
+    
+    
+    
+    
+    
     nation_obj.population_density = nation_obj.calculate_density()
-    # ---- Population growth ----
     if timer_minute >= 60:
         nation_obj.population += population_growth_per_minute
         timer_minute = 0
@@ -119,6 +135,7 @@ while running:
     save_nation(nation_obj, file_path)
 
     # ---- Events ----
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             save_nation(nation_obj, file_path)
@@ -133,6 +150,7 @@ while running:
                 running = False
 
     # ---- Draw ----
+    
     screen.fill((25, 25, 30))
 
     title = big_font.render(nation_obj.name, True, (255, 255, 255))
@@ -147,6 +165,7 @@ while running:
         f"Population: {abbreviate_number(nation_obj.population)}",
         f"Area: {abbreviate_number(nation_obj.area)} sq km",
         f"Income: ${abbreviate_number(nation_obj.income)}",
+        f"Commerce: {nation_obj.commerce}%",
         f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
         f"GDP: ${abbreviate_number(nation_obj.gdp)}",
         f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
