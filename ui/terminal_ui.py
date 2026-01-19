@@ -1,5 +1,4 @@
 import pygame
-import time
 import os
 import json
 
@@ -9,7 +8,7 @@ from engine.num_format import abbreviate_number
 from engine.world import regions
 
 # -------------------- CONFIG --------------------
-WIDTH, HEIGHT = 900, 600
+WIDTH, HEIGHT = 1200, 800
 FPS = 60
 
 population_growth_per_minute = 5000
@@ -75,7 +74,7 @@ while not setup_done:
                     region_index = (region_index + 1) % len(available_regions)
                 elif event.key == pygame.K_RETURN:
                     selected_region = available_regions[region_index]
-                    nation_obj = nation(input_text.strip(), 1_000_000, 100, 5_000_000_000, selected_region)
+                    nation_obj = nation(input_text.strip(), 1_000_000, 100, 5_000_000_000, 5_000_000_000, 5_000_000_000, selected_region)
                     setup_done = True
 
     # ---- Draw input interface ----
@@ -110,9 +109,10 @@ while running:
     if timer == 62:
         timer_minute += 1
         timer = 0
-    
+    nation_obj.update_economy(nation_obj.income + 1000)
+    nation_obj.population_density = nation_obj.calculate_density()
     # ---- Population growth ----
-    if timer_minute >= 60:  # 60 seconds = 43,200 "ticks" if each tick ~0.0014s? adjust if needed
+    if timer_minute >= 60:
         nation_obj.population += population_growth_per_minute
         timer_minute = 0
 
@@ -139,11 +139,17 @@ while running:
     screen.blit(title, (50, 30))
     text = font.render(str(60 - timer_minute), True, (220, 220, 220))
     screen.blit(text, (WIDTH-50, 20))
+    region_text = font.render(nation_obj.world_region, True, (220, 220, 220))
+    region_rect = region_text.get_rect(midtop=(WIDTH // 2, 20))
+    screen.blit(region_text, region_rect)
     stats = [
-        f"Population: {abbreviate_number(int(nation_obj.population))}",
+        f"Nation: {nation_obj.name}",
+        f"Population: {abbreviate_number(nation_obj.population)}",
         f"Area: {abbreviate_number(nation_obj.area)} sq km",
-        f"GDP: {abbreviate_number(nation_obj.commercial)}",
-        f"Region: {nation_obj.world_region}"
+        f"Income: ${abbreviate_number(nation_obj.income)}",
+        f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
+        f"GDP: ${abbreviate_number(nation_obj.gdp)}",
+        f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
     ]
 
     y = 100

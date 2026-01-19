@@ -1,37 +1,12 @@
 {
-    "Cat": {
-        "name": "Cat",
-        "population": 4025000,
+    "Meow": {
+        "name": "Meow",
+        "population": 2000000,
+        "population_density": 20000.0,
+        "income": 5000285000,
+        "gdp": 1825104025000,
+        "gdp_per_capita": 912552.0125,
         "area": 100,
-        "commercial": 5000000000,
-        "world_region": "Novara"
-    },
-    "Cat2": {
-        "name": "Cat2",
-        "population": 1000000,
-        "area": 100,
-        "commercial": 5000000000,
-        "world_region": "Novara"
-    },
-    "Novosibirsk": {
-        "name": "Novosibirsk",
-        "population": 1000000,
-        "area": 100,
-        "commercial": 5000000000,
-        "world_region": "Nordhelm"
-    },
-    "Maskun": {
-        "name": "Maskun",
-        "population": 1000000,
-        "area": 100,
-        "commercial": 5000000000,
-        "world_region": "Zayeth"
-    },
-    "The North Council": {
-        "name": "The North Council",
-        "population": 1000000,
-        "area": 100,
-        "commercial": 5000000000,
-        "world_region": "Nordhelm"
+        "world_region": "Aurelia"
     }
 }

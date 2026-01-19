@@ -17,9 +17,13 @@ def save_nation(nation_obj, file_path):
     data[nation_obj.name] = {
         "name": nation_obj.name,
         "population": nation_obj.population,
+        "population_density": nation_obj.population_density,
+        "income": nation_obj.income,
+        "gdp": nation_obj.gdp,
+        "gdp_per_capita": nation_obj.gdp_per_capita,
         "area": nation_obj.area,
-        "commercial": nation_obj.commercial,
         "world_region": nation_obj.world_region
+    
     }
 
     with open(file_path, 'w') as f:
@@ -34,16 +38,19 @@ def load_nation(file_path, name):
 
     if name not in data:
         # Nation does not exist → create new
-        return nation(name, 10000, 10000, 10000, "Unknown")
+        return nation(name, 10000, 10000, 0, 0, 0, "Unknown")
 
-    # Nation exists → load it
     n = data[name]
+
     return nation(
-        name,
+        n["name"],
         n["population"],
         n["area"],
-        n["commercial"],
-        n["world_region"]
+        n["income"],
+        n["gdp"],
+        n["gdp_per_capita"],
+        n.get("world_region")
     )
+
 
 
