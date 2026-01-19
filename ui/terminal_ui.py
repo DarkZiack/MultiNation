@@ -115,7 +115,11 @@ while running:
     nation_obj.income = (nation_obj.population * nation_obj.commerce * 0.1)
     nation_obj.commerce = math.ceil(100 * math.sqrt((100*5)+(500)))
     nation_obj.gdp = (nation_obj.income * 365)
-    nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
+    
+    # GDP PER CAPITA FIX
+    
+    pops = nation_obj.population
+    nation_obj.gdp_per_capita = (nation_obj.gdp/pops)
     
     
     

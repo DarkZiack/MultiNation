@@ -1,12 +1,12 @@
 {
     "Meow": {
         "name": "Meow",
-        "population": 5600001,
-        "population_density": 5600.001,
-        "income": 1771280316.3000002,
+        "population": 6700001,
+        "population_density": 6700.001,
+        "income": 2119210316.3000002,
         "commerce": 3163,
-        "gdp": 646517315449.5001,
-        "gdp_per_capita": 115449.50000000001,
+        "gdp": 773511765449.5001,
+        "gdp_per_capita": 773511.7654495002,
         "area": 1000,
         "world_region": "Nordhelm"
     },
