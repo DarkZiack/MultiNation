@@ -1,0 +1,14 @@
+{
+    "Cat": {
+        "name": "Cat",
+        "population": 2500000,
+        "population_density": 2500.0,
+        "income": 559024750000.0,
+        "commerce": 2236093,
+        "gdp": 204044033750000.0,
+        "gdp_per_capita": 81617613.5,
+        "area": 1000,
+        "world_region": "Vireon",
+        "tax": 10
+    }
+}

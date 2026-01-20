@@ -13,7 +13,7 @@ WIDTH, HEIGHT = 1200, 800
 FPS = 60
 
 population_growth_per_minute = 5000
-file_path = "nations_save.json"
+file_path = "data/nations_save.json"
 
 # -------------------- INIT --------------------
 pygame.init()

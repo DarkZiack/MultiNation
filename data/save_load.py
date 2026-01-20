@@ -2,7 +2,7 @@ from data.nation import nation
 import json
 import os
 
-file_path = "nations_save.json"
+file_path = "data/nations_save.json"
 
 def save_nation(nation_obj, file_path):
     if os.path.exists(file_path):
