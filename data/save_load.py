@@ -23,7 +23,8 @@ def save_nation(nation_obj, file_path):
         "gdp": nation_obj.gdp,
         "gdp_per_capita": nation_obj.gdp_per_capita,
         "area": nation_obj.area,
-        "world_region": nation_obj.world_region
+        "world_region": nation_obj.world_region,
+        "tax": nation_obj.tax
     
     }
 
@@ -51,6 +52,7 @@ def load_nation(file_path, name):
         n["commerce"],
         n["gdp"],
         n["gdp_per_capita"],
+        n["tax"],
         n.get("world_region")
     )
 

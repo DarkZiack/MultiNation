@@ -75,7 +75,7 @@ while not setup_done:
                     region_index = (region_index + 1) % len(available_regions)
                 elif event.key == pygame.K_RETURN:
                     selected_region = available_regions[region_index]
-                    nation_obj = nation(input_text.strip(), 1000000, 1000, 100, 100, 100, 100, selected_region)
+                    nation_obj = nation(input_text.strip(), 1000000, 1000, 100, 100, 100, 100, 10, selected_region)
                     setup_done = True
 
     # ---- Draw input interface ----
@@ -104,6 +104,14 @@ running = True
 timer = 0
 timer_minute = 0
 
+# -------------------- Economic Stats --------------------
+
+commerce_income = 0
+tax_income = 0
+trasport_income = 0
+education_income = 0
+
+
 
 while running:
     timer += 1
@@ -112,14 +120,14 @@ while running:
         timer = 0
     # ---- Economic growth ----
     
-    nation_obj.income = (nation_obj.population * nation_obj.commerce * 0.1)
-    nation_obj.commerce = math.ceil(100 * math.sqrt((100*5)+(500)))
+    nation_obj.income = (commerce_income + tax_income)
+    
+    commerce_income = (nation_obj.population * nation_obj.commerce * 0.1)
+    tax_income = (nation_obj.population * (nation_obj.tax * 0.06))
+    
+    nation_obj.commerce = math.ceil(100 * math.sqrt(max(0, 10000 + float(nation_obj.area) + float(nation_obj.population) / 0.005)))
     nation_obj.gdp = (nation_obj.income * 365)
-    
-    # GDP PER CAPITA FIX
-    
-    pops = nation_obj.population
-    nation_obj.gdp_per_capita = (nation_obj.gdp/pops)
+    nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
     
     
     
