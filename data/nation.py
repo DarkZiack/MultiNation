@@ -1,5 +1,7 @@
 class nation:
-    def __init__(self, name, population, area, income, commerce, gdp, gdp_per_capita, tax, world_region=None):
+    def __init__(self, name, population, area, income, commerce, commerce_buildings, 
+                transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
+        
         self.name = name
         self.population = population
         self.area = area
@@ -9,7 +11,10 @@ class nation:
         self.gdp = gdp
         self.gdp_per_capita = gdp_per_capita
         self.commerce = commerce
+        self.commerce_buildings = commerce_buildings
         self.tax = tax
+        self.transport = transport
+        self.transport_buildings = transport_buildings
 
     def calculate_density(self):
         if self.area > 0:

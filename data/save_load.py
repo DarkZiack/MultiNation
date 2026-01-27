@@ -2,6 +2,13 @@ from data.nation import nation
 import json
 import os
 
+"""
+(self, name, population, area, income, commerce, commerce_buildings, 
+transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
+
+
+"""
+
 file_path = "data/nations_save.json"
 
 def save_nation(nation_obj, file_path):
@@ -19,13 +26,15 @@ def save_nation(nation_obj, file_path):
         "population": nation_obj.population,
         "population_density": nation_obj.population_density,
         "income": nation_obj.income,
-        "commerce": nation_obj.commerce,
         "gdp": nation_obj.gdp,
         "gdp_per_capita": nation_obj.gdp_per_capita,
         "area": nation_obj.area,
         "world_region": nation_obj.world_region,
-        "tax": nation_obj.tax
-    
+        "tax": nation_obj.tax,
+        "commerce": nation_obj.commerce,
+        "commerce_buildings": nation_obj.commerce_buildings,
+        "transport": nation_obj.transport,
+        "transport_buildings": nation_obj.transport_buildings,
     }
 
     with open(file_path, 'w') as f:
@@ -49,10 +58,13 @@ def load_nation(file_path, name):
         n["population"],
         n["area"],
         n["income"],
-        n["commerce"],
         n["gdp"],
         n["gdp_per_capita"],
         n["tax"],
+        n["commerce"],
+        n["transport"],
+        n["commerce_buildings"],
+        n["transport_buildings"],
         n.get("world_region")
     )
 

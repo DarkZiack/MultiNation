@@ -75,7 +75,24 @@ while not setup_done:
                     region_index = (region_index + 1) % len(available_regions)
                 elif event.key == pygame.K_RETURN:
                     selected_region = available_regions[region_index]
-                    nation_obj = nation(input_text.strip(), 1000000, 1000, 100, 100, 100, 100, 10, selected_region)
+                    nation_obj = nation(input_text.strip(), 
+                                        1000000,  # Population
+                                        1000,  # Land
+                                        100,  # Income
+                                        100,  # Commerce
+                                        5, # Commerce Buidlings
+                                        100, # Transport
+                                        5, # Transport Buildings
+                                        100,  # GDP
+                                        100,  # GDPPC
+                                        10,  # Tax
+                                        selected_region)  # World Region
+                    """
+                    # (self, name, population, area, income, commerce, commerce_buildings, 
+                    transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
+
+
+                    """
                     setup_done = True
 
     # ---- Draw input interface ----
@@ -108,9 +125,9 @@ timer_minute = 0
 
 commerce_income = 0
 tax_income = 0
-trasport_income = 0
-education_income = 0
-
+trasport_income = 10000000
+education_income = 10000000
+infrastructure = 1000
 
 
 while running:
@@ -119,13 +136,15 @@ while running:
         timer_minute += 1
         timer = 0
     # ---- Economic growth ----
+    nation_obj.commerce = round((nation_obj.commerce_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + infrastructure)) + 100, 2) 
+    nation_obj.transport = round((nation_obj.transport_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + infrastructure)) + 100, 2)
     
-    nation_obj.income = (commerce_income + tax_income)
+    commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
+    tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
+    nation_obj.income = (commerce_income + tax_income + trasport_income + education_income)
     
-    commerce_income = (nation_obj.population * nation_obj.commerce * 0.1)
-    tax_income = (nation_obj.population * (nation_obj.tax * 0.06))
     
-    nation_obj.commerce = math.ceil(100 * math.sqrt(max(0, 10000 + float(nation_obj.area) + float(nation_obj.population) / 0.005)))
+
     nation_obj.gdp = (nation_obj.income * 365)
     nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
     
@@ -155,8 +174,8 @@ while running:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             if upgrade_button.collidepoint(event.pos):
-                nation_obj.population += 100_000
-
+                nation_obj.population += 1000000
+                infrastructure += 1000
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
@@ -176,8 +195,10 @@ while running:
         f"Nation: {nation_obj.name}",
         f"Population: {abbreviate_number(nation_obj.population)}",
         f"Area: {abbreviate_number(nation_obj.area)} sq km",
+        f"Infrastructure: {infrastructure}",
         f"Income: ${abbreviate_number(nation_obj.income)}",
         f"Commerce: {nation_obj.commerce}%",
+        f"Transport: {nation_obj.transport}%",
         f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
         f"GDP: ${abbreviate_number(nation_obj.gdp)}",
         f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
