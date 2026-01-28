@@ -77,6 +77,7 @@ while not setup_done:
                     selected_region = available_regions[region_index]
                     nation_obj = nation(input_text.strip(), 
                                         1000000,  # Population
+                                        1000, # Infrastructure
                                         1000,  # Land
                                         100,  # Income
                                         100,  # Commerce
@@ -127,7 +128,6 @@ commerce_income = 0
 tax_income = 0
 trasport_income = 10000000
 education_income = 10000000
-infrastructure = 1000
 
 
 while running:
@@ -136,8 +136,18 @@ while running:
         timer_minute += 1
         timer = 0
     # ---- Economic growth ----
-    nation_obj.commerce = round((nation_obj.commerce_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + infrastructure)) + 100, 2) 
-    nation_obj.transport = round((nation_obj.transport_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + infrastructure)) + 100, 2)
+    
+    # ---- Commerce Development ----
+    commerce_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+
+    # Prevent division by zero
+    commerce_development = max(commerce_development, 1)
+
+    # ---- Commerce Index ----
+    nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
+                        / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development,2)
+    
+    nation_obj.transport = round((nation_obj.transport_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + nation_obj.infrastructure)) + 100, 2)
     
     commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
     tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
@@ -175,7 +185,7 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             if upgrade_button.collidepoint(event.pos):
                 nation_obj.population += 1000000
-                infrastructure += 1000
+                nation_obj.infrastructure += 1000
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
@@ -195,7 +205,7 @@ while running:
         f"Nation: {nation_obj.name}",
         f"Population: {abbreviate_number(nation_obj.population)}",
         f"Area: {abbreviate_number(nation_obj.area)} sq km",
-        f"Infrastructure: {infrastructure}",
+        f"Infrastructure: {nation_obj.infrastructure}",
         f"Income: ${abbreviate_number(nation_obj.income)}",
         f"Commerce: {nation_obj.commerce}%",
         f"Transport: {nation_obj.transport}%",

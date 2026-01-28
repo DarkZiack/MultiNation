@@ -1,10 +1,11 @@
 class nation:
-    def __init__(self, name, population, area, income, commerce, commerce_buildings, 
+    def __init__(self, name, population, infrastructure, area, income, commerce, commerce_buildings, 
                 transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
         
         self.name = name
         self.population = population
         self.area = area
+        self.infrastructure = infrastructure
         self.world_region = world_region
         self.population_density = self.calculate_density()
         self.income = income
