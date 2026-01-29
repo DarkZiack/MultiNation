@@ -26,6 +26,7 @@ def save_nation(nation_obj, file_path):
         "population": nation_obj.population,
         "population_density": nation_obj.population_density,
         "income": nation_obj.income,
+        "balance": nation_obj.balance,
         "gdp": nation_obj.gdp,
         "gdp_per_capita": nation_obj.gdp_per_capita,
         "area": nation_obj.area,
@@ -49,24 +50,25 @@ def load_nation(file_path, name):
         data = json.load(f)
 
     if name not in data:
-        # Nation does not exist → create new
-        return nation(name, 10000, 10000, 0, 0, 0, 0, "Unknown")
+        # Nation does not exist → create new with default values
+        return nation(name, 1000000, 1000, 1000, 100, 100, 5, 10, 100, 5, 100, 100, 10, "Unknown")
 
     n = data[name]
 
     return nation(
         n["name"],
         n["population"],
-        n["area"],
         n["infrastructure"],
+        n["area"],
         n["income"],
+        n["balance"],
+        n["commerce"],
+        n["commerce_buildings"],
+        n["transport"],
+        n["transport_buildings"],
         n["gdp"],
         n["gdp_per_capita"],
         n["tax"],
-        n["commerce"],
-        n["transport"],
-        n["commerce_buildings"],
-        n["transport_buildings"],
         n.get("world_region")
     )
 

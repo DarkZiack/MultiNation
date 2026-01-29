@@ -1,5 +1,5 @@
 class nation:
-    def __init__(self, name, population, infrastructure, area, income, commerce, commerce_buildings, 
+    def __init__(self, name, population, infrastructure, area, income, balance, commerce, commerce_buildings, 
                 transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
         
         self.name = name
@@ -9,6 +9,7 @@ class nation:
         self.world_region = world_region
         self.population_density = self.calculate_density()
         self.income = income
+        self.balance = balance
         self.gdp = gdp
         self.gdp_per_capita = gdp_per_capita
         self.commerce = commerce
@@ -16,11 +17,19 @@ class nation:
         self.tax = tax
         self.transport = transport
         self.transport_buildings = transport_buildings
+        self.building_slots = self.calculate_building_slots()
 
     def calculate_density(self):
         if self.area > 0:
             return self.population / self.area
         return 0
+
+    def calculate_building_slots(self):
+        # Building slots based on infrastructure and area
+        base_slots = 10
+        infra_bonus = int(self.infrastructure / 100)  # 1 slot per 100 infrastructure
+        area_bonus = int(self.area / 1000)  # 1 slot per 1000 sq km
+        return base_slots + infra_bonus + area_bonus 
 
 
     def __str__(self):

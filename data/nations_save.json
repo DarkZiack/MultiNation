@@ -1,0 +1,19 @@
+{
+    "Novosibirsk": {
+        "name": "Novosibirsk",
+        "population": 1000000,
+        "population_density": 1000.0,
+        "income": 106128000.00000001,
+        "balance": 10000000,
+        "gdp": 38736720000.00001,
+        "gdp_per_capita": 38736.72000000001,
+        "area": 1000,
+        "infrastructure": 1000,
+        "world_region": "Nordhelm",
+        "tax": 10,
+        "commerce": 123.04,
+        "commerce_buildings": 5,
+        "transport": 132.95,
+        "transport_buildings": 5
+    }
+}

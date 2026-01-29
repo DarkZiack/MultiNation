@@ -80,6 +80,7 @@ while not setup_done:
                                         1000, # Infrastructure
                                         1000,  # Land
                                         100,  # Income
+                                        10000000, # Balance
                                         100,  # Commerce
                                         5, # Commerce Buidlings
                                         100, # Transport
@@ -89,7 +90,7 @@ while not setup_done:
                                         10,  # Tax
                                         selected_region)  # World Region
                     """
-                    # (self, name, population, area, income, commerce, commerce_buildings, 
+                    # (self, name, population, area, income, balance, commerce, commerce_buildings, 
                     transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
 
 
@@ -115,7 +116,11 @@ while not setup_done:
 
 # -------------------- UI ELEMENTS --------------------
 upgrade_button = pygame.Rect(50, 480, 300, 50)
-exit_button = pygame.Rect(400, 480, 300, 50)
+exit_button = pygame.Rect(WIDTH - 350, HEIGHT - 100, 300, 50)
+commerce_button = pygame.Rect(50, 540, 300, 50)
+transport_button = pygame.Rect(400, 540, 300, 50)
+land_button = pygame.Rect(50, 600, 300, 50)
+infrastructure_button = pygame.Rect(400, 600, 300, 50)
 
 # -------------------- MAIN LOOP --------------------
 running = True
@@ -136,18 +141,36 @@ while running:
         timer_minute += 1
         timer = 0
     # ---- Economic growth ----
-    
-    # ---- Commerce Development ----
     commerce_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
-
-    # Prevent division by zero
     commerce_development = max(commerce_development, 1)
 
     # ---- Commerce Index ----
     nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
                         / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development,2)
     
-    nation_obj.transport = round((nation_obj.transport_buildings * (50 * 1 * 1 * 1)) / (math.sqrt(nation_obj.population + nation_obj.infrastructure)) + 100, 2)
+    # ---- Transportation Development ----
+    integrated_public_transport = 0        # future tech / policy
+    bonus_transport_dev_reduction = 0       # modifiers
+    development = nation_obj.infrastructure # using infrastructure as dev proxy
+
+    transportation_development = (
+        nation_obj.infrastructure *
+        (1 + integrated_public_transport / 20)
+        + bonus_transport_dev_reduction
+        + (development + nation_obj.area) / 10)
+    transportation_development = max(transportation_development, 1)
+
+    # ---- Transportation Index (Roads) ----
+    roads = nation_obj.transport_buildings
+    bonus_roads = 0
+    transportation_eff = 1                 # efficiency modifier
+    bonus_road_output = 0
+    national_highway_system = 0
+    nation_obj.transport = round(
+        (100 * math.sqrt(((roads + bonus_roads) * transportation_eff * 200)/ transportation_development)
+         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4),2)
+    
+    
     
     commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
     tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
@@ -163,14 +186,10 @@ while running:
     
     # ---- Population Stats ----
     
-    
-    
-    
-    
-    
     nation_obj.population_density = nation_obj.calculate_density()
     if timer_minute >= 60:
-        nation_obj.population += population_growth_per_minute
+        nation_obj.population += population_growth_per_minute 
+        nation_obj.balance += (nation_obj.income/1440)
         timer_minute = 0
 
     save_nation(nation_obj, file_path)
@@ -181,14 +200,36 @@ while running:
         if event.type == pygame.QUIT:
             save_nation(nation_obj, file_path)
             running = False
-
         if event.type == pygame.MOUSEBUTTONDOWN:
-            if upgrade_button.collidepoint(event.pos):
-                nation_obj.population += 1000000
-                nation_obj.infrastructure += 1000
+            
+            if nation_obj.balance >= 100000:
+                if upgrade_button.collidepoint(event.pos):
+                    nation_obj.population += 10000
+                    nation_obj.balance -= 100000
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
+            
+            # Buildings
+            used_building_slots = nation_obj.commerce_buildings + nation_obj.transport_buildings
+            if used_building_slots < nation_obj.building_slots:
+                if nation_obj.balance >= 1000000:
+                    if commerce_button.collidepoint(event.pos):
+                        nation_obj.commerce_buildings += 1
+                        nation_obj.balance -= 1000000
+                    if transport_button.collidepoint(event.pos):
+                        nation_obj.transport_buildings += 1
+                        nation_obj.balance -= 1000000
+            
+            # Dev
+            
+            if nation_obj.balance >= 100000:
+                if land_button.collidepoint(event.pos):
+                    nation_obj.area += 1000
+                    nation_obj.balance -= 100000
+                if infrastructure_button.collidepoint(event.pos):
+                    nation_obj.infrastructure += 100
+                    nation_obj.balance -= 100000
 
     # ---- Draw ----
     
@@ -196,38 +237,62 @@ while running:
 
     title = big_font.render(nation_obj.name, True, (255, 255, 255))
     screen.blit(title, (50, 30))
+    title = big_font.render(f"Money: {abbreviate_number(nation_obj.balance)}", True, (255, 255, 255))
+    screen.blit(title, (230, 30))
     text = font.render(str(60 - timer_minute), True, (220, 220, 220))
-    screen.blit(text, (WIDTH-50, 20))
+    screen.blit(text, (WIDTH-50, 30))
     region_text = font.render(nation_obj.world_region, True, (220, 220, 220))
-    region_rect = region_text.get_rect(midtop=(WIDTH // 2, 20))
+    region_rect = region_text.get_rect(midtop=(WIDTH // 2, 30))
     screen.blit(region_text, region_rect)
-    stats = [
+    used_building_slots = nation_obj.commerce_buildings + nation_obj.transport_buildings
+    stats_left = [
         f"Nation: {nation_obj.name}",
-        f"Population: {abbreviate_number(nation_obj.population)}",
-        f"Area: {abbreviate_number(nation_obj.area)} sq km",
-        f"Infrastructure: {nation_obj.infrastructure}",
         f"Income: ${abbreviate_number(nation_obj.income)}",
-        f"Commerce: {nation_obj.commerce}%",
-        f"Transport: {nation_obj.transport}%",
-        f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
+        f"Population: {abbreviate_number(nation_obj.population)}",
+        f"Infrastructure: {nation_obj.infrastructure}",
+        f"Area: {abbreviate_number(nation_obj.area)} sq km",
         f"GDP: ${abbreviate_number(nation_obj.gdp)}",
         f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
+        f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
+    ]  
+    stats_right = [
+        f"Building Slots: {used_building_slots}/{nation_obj.building_slots}",
+        f"Transport: {nation_obj.transport}%",
+        f"Commerce: {nation_obj.commerce}%",
     ]
 
     y = 100
-    for stat in stats:
+    for stat in stats_left:
         text = font.render(stat, True, (220, 220, 220))
         screen.blit(text, (50, y))
+        y += 40
+
+    y = 100
+    for stat in stats_right:
+        text = font.render(stat, True, (220, 220, 220))
+        screen.blit(text, (WIDTH // 2 + 50, y))
         y += 40
 
     # ---- Buttons ----
     pygame.draw.rect(screen, (60, 140, 220), upgrade_button)
     pygame.draw.rect(screen, (200, 80, 80), exit_button)
+    pygame.draw.rect(screen, (60, 140, 220), commerce_button)
+    pygame.draw.rect(screen, (60, 140, 220), transport_button)
+    pygame.draw.rect(screen, (60, 140, 220), land_button)
+    pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
 
     screen.blit(font.render("Population Upgrade (+100k)", True, (255, 255, 255)),
                 (upgrade_button.x + 20, upgrade_button.y + 12))
     screen.blit(font.render("Save & Exit", True, (255, 255, 255)),
                 (exit_button.x + 90, exit_button.y + 12))
+    screen.blit(font.render("Commerce Buildings +1", True, (255, 255, 255)),
+                (commerce_button.x + 20, commerce_button.y + 12))
+    screen.blit(font.render("Transport Buildings +1", True, (255, 255, 255)),
+                (transport_button.x + 20, transport_button.y + 12))
+    screen.blit(font.render("Land +1000 sq km", True, (255, 255, 255)),
+                (land_button.x + 20, land_button.y + 12))
+    screen.blit(font.render("Infrastructure +1000", True, (255, 255, 255)),
+                (infrastructure_button.x + 20, infrastructure_button.y + 12))
 
     pygame.display.flip()
     clock.tick(FPS)
