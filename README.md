@@ -8,11 +8,11 @@ Built with Python and PyGame, this project lets you customize your own simulatio
 
 ## Features
 
-✔ Buildings and Indexes
-✔ Investments and Territory Expansion
-✖ Tech and Upgrades
-✖ AI
-✖ Wars
+ ✔ Buildings and Indexes <br/>
+ ✔ Investments and Territory Expansion <br/>
+ ✖ Tech and Upgrades <br/>
+ ✖ AI <br/>
+ ✖ Wars <br/>
 
 ---
 
