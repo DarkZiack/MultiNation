@@ -37,6 +37,14 @@ def save_nation(nation_obj, file_path):
         "commerce_buildings": nation_obj.commerce_buildings,
         "transport": nation_obj.transport,
         "transport_buildings": nation_obj.transport_buildings,
+        "stability": nation_obj.stability,
+        "stability_buildings": nation_obj.stability_buildings,
+        "healthcare": nation_obj.healthcare,
+        "healthcare_buildings": nation_obj.healthcare_buildings,
+        "education": nation_obj.education,
+        "education_buildings": nation_obj.education_buildings,
+        "safety": nation_obj.safety,
+        "safety_buildings": nation_obj.safety_buildings
     }
 
     with open(file_path, 'w') as f:
@@ -66,6 +74,14 @@ def load_nation(file_path, name):
         n["commerce_buildings"],
         n["transport"],
         n["transport_buildings"],
+        n["stability"],
+        n["stability_buildings"],
+        n["healthcare"],
+        n["healthcare_buildings"],
+        n["education"],
+        n["education_buildings"],
+        n["safety"],
+        n["safety_buildings"],
         n["gdp"],
         n["gdp_per_capita"],
         n["tax"],

@@ -1,6 +1,7 @@
 class nation:
     def __init__(self, name, population, infrastructure, area, income, balance, commerce, commerce_buildings, 
-                transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
+                transport, transport_buildings, stability, stability_buildings, healthcare, healthcare_buildings
+                , education, education_buildings, safety, safety_buildings ,gdp, gdp_per_capita, tax, world_region=None):
         
         self.name = name
         self.population = population
@@ -9,14 +10,22 @@ class nation:
         self.world_region = world_region
         self.population_density = self.calculate_density()
         self.income = income
+        self.tax = tax
         self.balance = balance
         self.gdp = gdp
         self.gdp_per_capita = gdp_per_capita
         self.commerce = commerce
         self.commerce_buildings = commerce_buildings
-        self.tax = tax
         self.transport = transport
         self.transport_buildings = transport_buildings
+        self.stability = stability
+        self.stability_buildings = stability_buildings
+        self.healthcare = healthcare
+        self.healthcare_buildings = healthcare_buildings
+        self.education = education
+        self.education_buildings = education_buildings
+        self.safety = safety
+        self.safety_buildings = safety_buildings
         self.building_slots = self.calculate_building_slots()
 
     def calculate_density(self):
