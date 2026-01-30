@@ -6,20 +6,27 @@ Built with Python and PyGame, this project lets you customize your own simulatio
 
 ---
 
-## 🚀 Features
+## Features
 
-✔ Build and manage your own nation  
-✔ Simple game loop powered by **PyGame**  
-✔ Expandable engine and UI to add more game mechanics  
-✔ Designed to be a foundation for future simulation upgrades
+✔ Buildings and Indexes
+✔ Investments and Territory Expansion
+✖ Tech and Upgrades
+✖ AI
+✖ Wars
 
 ---
 
-## 🧠 How to Play
+## How to Run and Play
 
 1. Clone the repository  
 ```bash
 git clone https://github.com/DarkZiack/MultiNation.git
+```
+2. Install dependencies
+```bash
 pip install pygame
+```
+3. Clone the repository  
+```bash
 python main.py <--- Run this file
-
+```
