@@ -26,7 +26,7 @@ git clone https://github.com/DarkZiack/MultiNation.git
 ```bash
 pip install pygame
 ```
-3. Clone the repository  
+3. Run the file "main.py"
 ```bash
-python main.py <--- Run this file
+python main.py 
 ```
