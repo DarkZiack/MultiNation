@@ -8,21 +8,21 @@ from data.save_load import load_nation, save_nation
 from engine.num_format import abbreviate_number
 from engine.world import regions
 
-# -------------------- CONFIG --------------------
+#   CONFIG --------------------
 WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 
 population_growth_per_minute = 5000
 file_path = "data/nations_save.json"
 
-# -------------------- PANEL CONFIG --------------------
+# PANEL CONFIG -------------------- 
 PANEL_WIDTH = 350
 PANEL_CLOSED_X = WIDTH
 PANEL_OPEN_X = WIDTH - PANEL_WIDTH
 PANEL_ANIMATION_SPEED = 20
 PANEL_TABS = ["Buildings", "Investments"]
 
-# -------------------- INIT --------------------
+# INIT --------------------
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Nation Simulator")
@@ -30,14 +30,14 @@ clock = pygame.time.Clock()
 font = pygame.font.SysFont(None, 32)
 big_font = pygame.font.SysFont(None, 40)
 
-# -------------------- LOAD SAVE DATA --------------------
+#   LOAD SAVE DATA --------------------
 if os.path.exists(file_path):
     with open(file_path, "r") as f:
         saved_nations = json.load(f)
 else:
     saved_nations = {}
 
-# -------------------- NATION SETUP (PYGAME MENU) --------------------
+# -------------------- NATION SETUP (PYGAME MENU)  
 input_text = ""
 phase = "name"  # name -> region -> done
 message = ""
@@ -93,17 +93,17 @@ while not setup_done:
                                         100,  # Income
                                         10000000, # Balance
                                         100,  # Commerce
-                                        5, # Commerce Buidlings
+                                        0, # Commerce Buidlings
                                         100, # Transport
-                                        5, # Transport Buildings
+                                        0, # Transport Buildings
                                         100,  # Stability
-                                        5, # Stability Buildings
+                                        0, # Stability Buildings
                                         100,  # Healthcare
-                                        5, # Healthcare Buildings
+                                        0, # Healthcare Buildings
                                         100,  # Education
-                                        5, # Education Buildings
+                                        0, # Education Buildings
                                         100,  # Safety
-                                        5, # Safety Buildings
+                                        0, # Safety Buildings
                                         100,  # GDP
                                         100,  # GDPPC
                                         10,  # Tax
@@ -115,7 +115,7 @@ while not setup_done:
                     """
                     setup_done = True
 
-    # ---- Draw input interface ----
+    # Draw input interface ----
     if phase == "name":
         draw_text(screen, "Enter nation name:", (50, 50), big=True)
         pygame.draw.rect(screen, (50, 50, 50), pygame.Rect(45, 95, 200, 30))
@@ -132,7 +132,7 @@ while not setup_done:
     pygame.display.flip()
     clock.tick(FPS)
 
-# -------------------- UI ELEMENTS --------------------
+#  UI ELEMENTS --------------------
 upgrade_button = pygame.Rect(50, 480, 300, 50)
 exit_button = pygame.Rect(WIDTH - 350, HEIGHT - 100, 300, 50)
 commerce_button = pygame.Rect(50, 540, 300, 50)
@@ -144,23 +144,20 @@ healthcare_button = pygame.Rect(400, 660, 300, 50)
 education_button = pygame.Rect(50, 720, 300, 50)
 safety_button = pygame.Rect(400, 720, 300, 50)
 
-# -------------------- PANEL STATE --------------------
+# PANEL STATE --------------------
 panel_is_open = False
 panel_x = PANEL_CLOSED_X
-# panel_screen: 'main' shows navigation, 'buildings' and 'investments' show respective buy screens
-panel_screen = "main"
+panel_screen = "nation"
 
-# -------------------- MAIN LOOP --------------------
+# MAIN LOOP --------------------
 running = True
 timer = 0
 timer_minute = 0
 
-# -------------------- Economic Stats --------------------
+#  Economic Stats 
 
 commerce_income = 0
 tax_income = 0
-trasport_income = 10000000
-education_income = 10000000
 
 
 while running:
@@ -168,15 +165,20 @@ while running:
     if timer == 62:
         timer_minute += 1
         timer = 0
-    # ---- Economic growth ----
+
+
+    # Commerce Index ----
+    
+        # Economic growth
     commerce_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
     commerce_development = max(commerce_development, 1)
-
-    # ---- Commerce Index ----
-    nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
-                        / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development,2)
     
-    # ---- Transportation Development ----
+    nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
+                        / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100,2)
+
+    # Transportation Index (Roads) ----
+    
+        # Transportation Development
     integrated_public_transport = 0        # future tech / policy
     bonus_transport_dev_reduction = 0       # modifiers
     development = nation_obj.infrastructure # using infrastructure as dev proxy
@@ -187,8 +189,7 @@ while running:
         + bonus_transport_dev_reduction
         + (development + nation_obj.area) / 10)
     transportation_development = max(transportation_development, 1)
-
-    # ---- Transportation Index (Roads) ----
+    
     roads = nation_obj.transport_buildings
     bonus_roads = 0
     transportation_eff = 1                 # efficiency modifier
@@ -196,16 +197,21 @@ while running:
     national_highway_system = 0
     nation_obj.transport = round(
         (100 * math.sqrt(((roads + bonus_roads) * transportation_eff * 200)/ transportation_development)
-         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4),2)
-    # ---- Income Calculation ----
+         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4)+100,2)
+    
+    # Income Calculation ----
     commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
+    transport_income = (nation_obj.population * (nation_obj.transport * 0.06))
+    healthcare_income = (nation_obj.population * (nation_obj.healthcare * 0.02))
+    safety_income = (nation_obj.population * (nation_obj.safety * 0.03))
+    education_income = (nation_obj.population * (nation_obj.education * 0.04))
     tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
-    nation_obj.income = (commerce_income + tax_income + trasport_income + education_income)
+    nation_obj.income = (commerce_income + tax_income + transport_income + healthcare_income + safety_income + education_income)
     nation_obj.gdp = (nation_obj.income * 365)
     nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
     
-    # ---- Population Stats ----
-    population_growth_per_minute = round((nation_obj.population * 0.001) * min((nation_obj.healthcare / 100), 1))
+    # Population Stats ----
+    population_growth_per_minute = round((nation_obj.population * 0.0015) * min((nation_obj.healthcare / 100), 1))
     nation_obj.population_density = nation_obj.calculate_density()
     if timer_minute >= 60:
         nation_obj.population += population_growth_per_minute 
@@ -214,7 +220,7 @@ while running:
 
     save_nation(nation_obj, file_path)
 
-    # ---- Panel Animation ----
+    # Panel Animation ----
     target_x = PANEL_OPEN_X if panel_is_open else PANEL_CLOSED_X
     if panel_x != target_x:
         if panel_x < target_x:
@@ -222,7 +228,7 @@ while running:
         else:
             panel_x = max(panel_x - PANEL_ANIMATION_SPEED, target_x)
 
-    # ---- Events ----
+    # Events ----
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -248,22 +254,22 @@ while running:
                 if nation_obj.balance >= 1000000:
                     if commerce_button.collidepoint(event.pos):
                         nation_obj.commerce_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
                     elif transport_button.collidepoint(event.pos):
                         nation_obj.transport_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
                     elif stability_button.collidepoint(event.pos):
                         nation_obj.stability_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
                     elif healthcare_button.collidepoint(event.pos):
                         nation_obj.healthcare_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
                     elif education_button.collidepoint(event.pos):
                         nation_obj.education_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
                     elif safety_button.collidepoint(event.pos):
                         nation_obj.safety_buildings += 1
-                        nation_obj.balance -= 1000000
+                        nation_obj.balance -= 100000
             
             # Dev
             
@@ -271,9 +277,11 @@ while running:
                 if land_button.collidepoint(event.pos):
                     nation_obj.area += 1000
                     nation_obj.balance -= 100000
+                    calculate_building_slots
                 if infrastructure_button.collidepoint(event.pos):
                     nation_obj.infrastructure += 100
                     nation_obj.balance -= 100000
+                    calculate_building_slots
 
             # Panel events: dynamic toggle attached to panel edge
             toggle_rect = pygame.Rect(int(panel_x) - 40, 0, 40, 50)
@@ -281,72 +289,71 @@ while running:
                 panel_is_open = not panel_is_open
 
             if panel_x < WIDTH:  # Panel is visible (or sliding)
-                # Panel navigation screens
-                if panel_screen == "main":
-                    nation_screen_button = pygame.Rect(panel_x + 20, 70, PANEL_WIDTH -40, 50)
-                    buildings_screen_button = pygame.Rect(panel_x + 20, 140, PANEL_WIDTH - 40, 50)
-                    investments_screen_button = pygame.Rect(panel_x + 20, 210, PANEL_WIDTH - 40, 50)
-                    if nation_screen_button.collidepoint(event.pos):
-                        panel_screen = "nation"
-                    elif buildings_screen_button.collidepoint(event.pos):
-                        panel_screen = "buildings"
-                    elif investments_screen_button.collidepoint(event.pos):
-                        panel_screen = "investments"
+            # Panel navigation screens
+                nation_screen_button = pygame.Rect(panel_x + 20, 70, PANEL_WIDTH -40, 50)
+                buildings_screen_button = pygame.Rect(panel_x + 20, 140, PANEL_WIDTH - 40, 50)
+                investments_screen_button = pygame.Rect(panel_x + 20, 210, PANEL_WIDTH - 40, 50)
+                if nation_screen_button.collidepoint(event.pos):
+                    panel_screen = "nation"
+                elif buildings_screen_button.collidepoint(event.pos):
+                    panel_screen = "buildings"
+                elif investments_screen_button.collidepoint(event.pos):
+                    panel_screen = "investments"
 
-                elif panel_screen == "buildings":
-                    commerce_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
-                    transport_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
-                    stability_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
-                    healthcare_panel_button = pygame.Rect(panel_x + 20, 410, PANEL_WIDTH - 40, 50)
-                    education_panel_button = pygame.Rect(panel_x + 20, 480, PANEL_WIDTH - 40, 50)
-                    safety_panel_button = pygame.Rect(panel_x + 20, 550, PANEL_WIDTH - 40, 50)
-                    back_button = pygame.Rect(panel_x + 20, 620, PANEL_WIDTH - 40, 40)
-                    used_building_slots = (
-                        nation_obj.commerce_buildings + nation_obj.transport_buildings
-                        + nation_obj.stability_buildings + nation_obj.healthcare_buildings
-                        + nation_obj.education_buildings + nation_obj.safety_buildings
-                    )
-                    if back_button.collidepoint(event.pos):
-                        panel_screen = "main"
-                    elif used_building_slots < nation_obj.building_slots and nation_obj.balance >= 1000000:
-                        if commerce_panel_button.collidepoint(event.pos):
-                            nation_obj.commerce_buildings += 1
-                            nation_obj.balance -= 1000000
-                        elif transport_panel_button.collidepoint(event.pos):
-                            nation_obj.transport_buildings += 1
-                            nation_obj.balance -= 1000000
-                        elif stability_panel_button.collidepoint(event.pos):
-                            nation_obj.stability_buildings += 1
-                            nation_obj.balance -= 1000000
-                        elif healthcare_panel_button.collidepoint(event.pos):
-                            nation_obj.healthcare_buildings += 1
-                            nation_obj.balance -= 1000000
-                        elif education_panel_button.collidepoint(event.pos):
-                            nation_obj.education_buildings += 1
-                            nation_obj.balance -= 1000000
-                        elif safety_panel_button.collidepoint(event.pos):
-                            nation_obj.safety_buildings += 1
-                            nation_obj.balance -= 1000000
+            elif panel_screen == "buildings":
+                commerce_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
+                transport_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
+                stability_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
+                healthcare_panel_button = pygame.Rect(panel_x + 20, 410, PANEL_WIDTH - 40, 50)
+                education_panel_button = pygame.Rect(panel_x + 20, 480, PANEL_WIDTH - 40, 50)
+                safety_panel_button = pygame.Rect(panel_x + 20, 550, PANEL_WIDTH - 40, 50)
+                back_button = pygame.Rect(panel_x + 20, 620, PANEL_WIDTH - 40, 40)
+                used_building_slots = (
+                    nation_obj.commerce_buildings + nation_obj.transport_buildings
+                    + nation_obj.stability_buildings + nation_obj.healthcare_buildings
+                    + nation_obj.education_buildings + nation_obj.safety_buildings
+                )
+                if back_button.collidepoint(event.pos):
+                    panel_screen = "main"
+                elif used_building_slots < nation_obj.building_slots and nation_obj.balance >= 1000000:
+                    if commerce_panel_button.collidepoint(event.pos):
+                        nation_obj.commerce_buildings += 1
+                        nation_obj.balance -= 1000000
+                    elif transport_panel_button.collidepoint(event.pos):
+                        nation_obj.transport_buildings += 1
+                        nation_obj.balance -= 1000000
+                    elif stability_panel_button.collidepoint(event.pos):
+                        nation_obj.stability_buildings += 1
+                        nation_obj.balance -= 1000000
+                    elif healthcare_panel_button.collidepoint(event.pos):
+                        nation_obj.healthcare_buildings += 1
+                        nation_obj.balance -= 1000000
+                    elif education_panel_button.collidepoint(event.pos):
+                        nation_obj.education_buildings += 1
+                        nation_obj.balance -= 1000000
+                    elif safety_panel_button.collidepoint(event.pos):
+                        nation_obj.safety_buildings += 1
+                        nation_obj.balance -= 1000000
 
-                elif panel_screen == "investments":
-                    pop_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
-                    land_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
-                    infra_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
-                    back_button = pygame.Rect(panel_x + 20, 420, PANEL_WIDTH - 40, 40)
-                    if back_button.collidepoint(event.pos):
-                        panel_screen = "main"
-                    elif nation_obj.balance >= 100000:
-                        if pop_panel_button.collidepoint(event.pos):
-                            nation_obj.population += 10000
-                            nation_obj.balance -= 100000
-                        elif land_panel_button.collidepoint(event.pos):
-                            nation_obj.area += 1000
-                            nation_obj.balance -= 100000
-                        elif infra_panel_button.collidepoint(event.pos):
-                            nation_obj.infrastructure += 100
-                            nation_obj.balance -= 100000
+            elif panel_screen == "investments":
+                pop_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
+                land_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
+                infra_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
+                back_button = pygame.Rect(panel_x + 20, 420, PANEL_WIDTH - 40, 40)
+                if back_button.collidepoint(event.pos):
+                    panel_screen = "main"
+                elif nation_obj.balance >= 100000:
+                    if pop_panel_button.collidepoint(event.pos):
+                        nation_obj.population += 10000
+                        nation_obj.balance -= 100000
+                    elif land_panel_button.collidepoint(event.pos):
+                        nation_obj.area += 1000
+                        nation_obj.balance -= 100000
+                    elif infra_panel_button.collidepoint(event.pos):
+                        nation_obj.infrastructure += 100
+                        nation_obj.balance -= 100000
 
-    # ---- Draw ----
+    # Draw ----
     
     screen.fill((25, 25, 30))
 
@@ -360,77 +367,9 @@ while running:
     region_text = font.render(nation_obj.world_region, True, (220, 220, 220))
     region_rect = region_text.get_rect(midtop=(WIDTH // 2, 30))
     screen.blit(region_text, region_rect)
-    used_building_slots = (
-        nation_obj.commerce_buildings + nation_obj.transport_buildings
-        + nation_obj.stability_buildings + nation_obj.healthcare_buildings
-        + nation_obj.education_buildings + nation_obj.safety_buildings
-    )
-    stats_left = [
-        f"Nation: {nation_obj.name}",
-        f"Income: ${abbreviate_number(nation_obj.income)}",
-        f"Population: {abbreviate_number(nation_obj.population)}",
-        f"Infrastructure: {nation_obj.infrastructure}",
-        f"Area: {abbreviate_number(nation_obj.area)} sq km",
-        f"GDP: ${abbreviate_number(nation_obj.gdp)}",
-        f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
-        f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
-    ]  
-    stats_right = [
-        f"Building Slots: {used_building_slots}/{nation_obj.building_slots}",
-        f"Stability: {nation_obj.stability}%",
-        f"Commerce: {nation_obj.commerce}%",
-        f"Transport: {nation_obj.transport}%",
-        f"Healthcare: {nation_obj.healthcare}%",
-        f"Education: {nation_obj.education}%",
-        f"Safety: {nation_obj.safety}%",
-    ]
 
-    y = 100
-    for stat in stats_left:
-        text = font.render(stat, True, (220, 220, 220))
-        screen.blit(text, (50, y))
-        y += 40
 
-    y = 100
-    for stat in stats_right:
-        text = font.render(stat, True, (220, 220, 220))
-        screen.blit(text, (WIDTH // 2 + 50, y))
-        y += 40
-
-    # ---- Buttons ----
-    pygame.draw.rect(screen, (60, 140, 220), upgrade_button)
-    pygame.draw.rect(screen, (200, 80, 80), exit_button)
-    pygame.draw.rect(screen, (60, 140, 220), commerce_button)
-    pygame.draw.rect(screen, (60, 140, 220), transport_button)
-    pygame.draw.rect(screen, (60, 140, 220), land_button)
-    pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
-    pygame.draw.rect(screen, (60, 140, 220), stability_button)
-    pygame.draw.rect(screen, (60, 140, 220), healthcare_button)
-    pygame.draw.rect(screen, (60, 140, 220), education_button)
-    pygame.draw.rect(screen, (60, 140, 220), safety_button)
-
-    screen.blit(font.render("Population Upgrade (+100k)", True, (255, 255, 255)),
-                (upgrade_button.x + 20, upgrade_button.y + 12))
-    screen.blit(font.render("Save & Exit", True, (255, 255, 255)),
-                (exit_button.x + 90, exit_button.y + 12))
-    screen.blit(font.render("Commerce Buildings +1", True, (255, 255, 255)),
-                (commerce_button.x + 20, commerce_button.y + 12))
-    screen.blit(font.render("Transport Buildings +1", True, (255, 255, 255)),
-                (transport_button.x + 20, transport_button.y + 12))
-    screen.blit(font.render("Land +1000 sq km", True, (255, 255, 255)),
-                (land_button.x + 20, land_button.y + 12))
-    screen.blit(font.render("Infrastructure +1000", True, (255, 255, 255)),
-                (infrastructure_button.x + 20, infrastructure_button.y + 12))
-    screen.blit(font.render("Stability Buildings +1", True, (255, 255, 255)),
-                (stability_button.x + 20, stability_button.y + 12))
-    screen.blit(font.render("Healthcare Buildings +1", True, (255, 255, 255)),
-                (healthcare_button.x + 20, healthcare_button.y + 12))
-    screen.blit(font.render("Education Buildings +1", True, (255, 255, 255)),
-                (education_button.x + 20, education_button.y + 12))
-    screen.blit(font.render("Safety Buildings +1", True, (255, 255, 255)),
-                (safety_button.x + 20, safety_button.y + 12))
-
-    # ---- Panel Drawing ----
+    # Panel Drawing ----
     # Draw toggle button attached to panel edge (always visible)
     toggle_rect = pygame.Rect(int(panel_x) - 40, 0, 40, 50)
     pygame.draw.rect(screen, (100, 100, 120), toggle_rect)
@@ -458,50 +397,73 @@ while running:
         screen.blit(font.render("Buildings", True, (255, 255, 255)), (buildings_screen_button.x + 10, buildings_screen_button.y + 12))
         screen.blit(font.render("Investments", True, (255, 255, 255)), (investments_screen_button.x + 10, investments_screen_button.y + 12))
             
-        if panel_screen == "nation":
-            print("hi")
+    if panel_screen == "nation":
+        # Buttons ----
+        pygame.draw.rect(screen, (200, 80, 80), exit_button)
+        screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
         
+        # Stats ----
         
-        elif panel_screen == "buildings":
-            commerce_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
-            transport_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
-            stability_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
-            healthcare_panel_button = pygame.Rect(panel_x + 20, 410, PANEL_WIDTH - 40, 50)
-            education_panel_button = pygame.Rect(panel_x + 20, 480, PANEL_WIDTH - 40, 50)
-            safety_panel_button = pygame.Rect(panel_x + 20, 550, PANEL_WIDTH - 40, 50)
-            back_button = pygame.Rect(panel_x + 20, 620, PANEL_WIDTH - 40, 40)
-            pygame.draw.rect(screen, (60, 140, 220), commerce_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), transport_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), stability_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), healthcare_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), education_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), safety_panel_button)
-            pygame.draw.rect(screen, (200, 80, 80), back_button)
-            screen.blit(font.render("Commerce Buildings +1", True, (255, 255, 255)), (commerce_panel_button.x + 10, commerce_panel_button.y + 12))
-            screen.blit(font.render("Transport Buildings +1", True, (255, 255, 255)), (transport_panel_button.x + 10, transport_panel_button.y + 12))
-            screen.blit(font.render("Stability Buildings +1", True, (255, 255, 255)), (stability_panel_button.x + 10, stability_panel_button.y + 12))
-            screen.blit(font.render("Healthcare Buildings +1", True, (255, 255, 255)), (healthcare_panel_button.x + 10, healthcare_panel_button.y + 12))
-            screen.blit(font.render("Education Buildings +1", True, (255, 255, 255)), (education_panel_button.x + 10, education_panel_button.y + 12))
-            screen.blit(font.render("Safety Buildings +1", True, (255, 255, 255)), (safety_panel_button.x + 10, safety_panel_button.y + 12))
-            screen.blit(font.render("Buildings", True, (255, 255, 255)), (buildings_screen_button.x + 10, buildings_screen_button.y + 12))
-            screen.blit(font.render("Investments", True, (255, 255, 255)), (investments_screen_button.x + 10, investments_screen_button.y + 12))
-            screen.blit(font.render("Nation", True, (255, 255, 255)), (panel_x + 10, 100))
+        used_building_slots = (
+        nation_obj.commerce_buildings + nation_obj.transport_buildings
+        + nation_obj.stability_buildings + nation_obj.healthcare_buildings
+        + nation_obj.education_buildings + nation_obj.safety_buildings)
+        stats_left = [
+            f"Nation: {nation_obj.name}",
+            f"Income: ${abbreviate_number(nation_obj.income)}",
+            f"Population: {abbreviate_number(nation_obj.population)}",
+            f"Infrastructure: {nation_obj.infrastructure}",
+            f"Area: {abbreviate_number(nation_obj.area)} sq km",
+            f"GDP: ${abbreviate_number(nation_obj.gdp)}",
+            f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
+            f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
+        ]  
+        stats_right = [
+            f"Building Slots: {used_building_slots}/{nation_obj.building_slots}",
+            f"Stability: {nation_obj.stability}%",
+            f"Commerce: {nation_obj.commerce}%",
+            f"Transport: {nation_obj.transport}%",
+            f"Healthcare: {nation_obj.healthcare}%",
+            f"Education: {nation_obj.education}%",
+            f"Safety: {nation_obj.safety}%",
+        ]
+        y = 100
+        for stat in stats_left:
+            text = font.render(stat, True, (220, 220, 220))
+            screen.blit(text, (50, y))
+            y += 40
+        y = 100
+        for stat in stats_right:
+            text = font.render(stat, True, (220, 220, 220))
+            screen.blit(text, (WIDTH // 2 + 50, y))
+            y += 40
+    
+    elif panel_screen == "buildings":
+        pygame.draw.rect(screen, (200, 80, 80), exit_button)
+        pygame.draw.rect(screen, (60, 140, 220), commerce_button)
+        pygame.draw.rect(screen, (60, 140, 220), transport_button)
+        pygame.draw.rect(screen, (60, 140, 220), stability_button)
+        pygame.draw.rect(screen, (60, 140, 220), healthcare_button)
+        pygame.draw.rect(screen, (60, 140, 220), education_button)
+        pygame.draw.rect(screen, (60, 140, 220), safety_button)
 
-        elif panel_screen == "investments":
-            pop_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
-            land_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
-            infra_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
-            back_button = pygame.Rect(panel_x + 20, 420, PANEL_WIDTH - 40, 40)
-            pygame.draw.rect(screen, (60, 140, 220), pop_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), land_panel_button)
-            pygame.draw.rect(screen, (60, 140, 220), infra_panel_button)
-            pygame.draw.rect(screen, (200, 80, 80), back_button)
-            screen.blit(font.render("Population Upgrade (+100k)", True, (255, 255, 255)), (pop_panel_button.x + 10, pop_panel_button.y + 12))
-            screen.blit(font.render("Land +1000 sq km", True, (255, 255, 255)), (land_panel_button.x + 10, land_panel_button.y + 12))
-            screen.blit(font.render("Infrastructure +100", True, (255, 255, 255)), (infra_panel_button.x + 10, infra_panel_button.y + 12))
-            screen.blit(font.render("Buildings", True, (255, 255, 255)), (buildings_screen_button.x + 10, buildings_screen_button.y + 12))
-            screen.blit(font.render("Investments", True, (255, 255, 255)), (investments_screen_button.x + 10, investments_screen_button.y + 12))
-            screen.blit(font.render("Nation", True, (255, 255, 255)), (panel_x + 10, 100))
+        screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
+        screen.blit(font.render("Commerce Buildings +1", True, (255, 255, 255)),(commerce_button.x + 20, commerce_button.y + 12))
+        screen.blit(font.render("Transport Buildings +1", True, (255, 255, 255)),(transport_button.x + 20, transport_button.y + 12))
+        screen.blit(font.render("Stability Buildings +1", True, (255, 255, 255)),(stability_button.x + 20, stability_button.y + 12))
+        screen.blit(font.render("Healthcare Buildings +1", True, (255, 255, 255)),(healthcare_button.x + 20, healthcare_button.y + 12))
+        screen.blit(font.render("Education Buildings +1", True, (255, 255, 255)),(education_button.x + 20, education_button.y + 12))
+        screen.blit(font.render("Safety Buildings +1", True, (255, 255, 255)),(safety_button.x + 20, safety_button.y + 12))
+
+    elif panel_screen == "investments":
+        pygame.draw.rect(screen, (200, 80, 80), exit_button)
+        pygame.draw.rect(screen, (60, 140, 220), upgrade_button)
+        pygame.draw.rect(screen, (60, 140, 220), land_button)
+        pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
+        screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
+        screen.blit(font.render("Land +1000 sq km", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
+        screen.blit(font.render("Infrastructure +1000", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
+        screen.blit(font.render("Population Upgrade (+100k)", True, (255, 255, 255)),(upgrade_button.x + 20, upgrade_button.y + 12))
 
     pygame.display.flip()
     clock.tick(FPS)

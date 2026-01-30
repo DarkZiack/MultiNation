@@ -26,19 +26,19 @@ class nation:
         self.education_buildings = education_buildings
         self.safety = safety
         self.safety_buildings = safety_buildings
-        self.building_slots = self.calculate_building_slots()
 
     def calculate_density(self):
         if self.area > 0:
             return self.population / self.area
         return 0
 
-    def calculate_building_slots(self):
+    @property
+    def building_slots(self):
         # Building slots based on infrastructure and area
-        base_slots = 10
+        base_slots = 29
         infra_bonus = int(self.infrastructure / 100)  # 1 slot per 100 infrastructure
         area_bonus = int(self.area / 1000)  # 1 slot per 1000 sq km
-        return base_slots + infra_bonus + area_bonus 
+        return base_slots + infra_bonus + area_bonus
 
 
     def __str__(self):
