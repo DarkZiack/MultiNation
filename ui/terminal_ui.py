@@ -496,31 +496,23 @@ while running:
             # First line
             (f"Owned: {nation_obj.commerce_buildings}", (350, 110)),
             (f"Commerce: {nation_obj.commerce}%", (350, 150)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.commerce_buildings+1) * 3.33 * nation_obj.transport)
-                        / commerce_development)+((nation_obj.commerce_buildings+1) * 10000) / commerce_development + 100 - nation_obj.commerce,2)}%", (350, 190)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.commerce_buildings+1) * 3.33 * nation_obj.transport)/ commerce_development)+((nation_obj.commerce_buildings+1) * 10000) / commerce_development + 100 - nation_obj.commerce,2)}%", (350, 190)),
             (f"Owned: {nation_obj.transport_buildings}", (350, 460)),
             (f"Transport: {nation_obj.transport}%", (350, 500)),
-            (f"+ {round((100 * math.sqrt(((roads+1 + bonus_roads) * transportation_eff * 200)/ transportation_development)
-                        + (((roads+1 + bonus_roads) * transportation_eff * 10000)/ transportation_development))* 
-                        (1+ bonus_road_output / 100+ national_highway_system / 4) + 100 - nation_obj.transport,2)}%", (350, 540)),
+            (f"+ {round((100 * math.sqrt(((roads+1 + bonus_roads) * transportation_eff * 200)/ transportation_development)+ (((roads+1 + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4) + 100 - nation_obj.transport,2)}%", (350, 540)),
             (f"Owned: {nation_obj.healthcare_buildings}", (350, 810)),
             (f"Healthcare {nation_obj.healthcare}%", (350, 850)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.healthcare_buildings+1) * 3.33)
-                        / healthcare_development)+((nation_obj.healthcare_buildings+1) * 10000) / healthcare_development + 100 - nation_obj.healthcare,2)}%", (350, 890)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.healthcare_buildings+1) * 3.33) / healthcare_development)+((nation_obj.healthcare_buildings+1) * 10000) / healthcare_development + 100 - nation_obj.healthcare,2)}%", (350, 890)),
             # Second line
             (f"Owned: {nation_obj.education_buildings}", (970, 110)),
             (f"Education: {nation_obj.education}%", (970, 150)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.education_buildings+1) * 3.33 * nation_obj.safety)
-                        / education_development)+((nation_obj.education_buildings+1) * 10000) / education_development + 100 - nation_obj.education,2)}%", (970, 190)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.education_buildings+1) * 3.33 * nation_obj.safety)/ education_development)+((nation_obj.education_buildings+1) * 10000) / education_development + 100 - nation_obj.education,2)}%", (970, 190)),
             (f"Owned: {nation_obj.safety_buildings}", (970, 460)),
             (f"Safety: {nation_obj.safety}%", (970, 500)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.safety_buildings+1) * 3.33)
-                        / safety_development)+((nation_obj.safety_buildings+1) * 10000) / safety_development + 100 - nation_obj.safety,2)}%", (970, 540)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.safety_buildings+1) * 3.33) / safety_development)+((nation_obj.safety_buildings+1) * 10000) / safety_development + 100 - nation_obj.safety,2)}%", (970, 540)),
             (f"Owned: {nation_obj.stability_buildings}", (970, 810)),
             (f"Stability: {nation_obj.stability}%", (970, 850)),
-            (f"+ {round(
-                        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
-                        + ((100 * math.sqrt(((nation_obj.stability_buildings+1) * 1000)/ stability_development))) + 100 - nation_obj.stability,2)}%", (970, 890)),
+            (f"+ {round(((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)+ ((100 * math.sqrt(((nation_obj.stability_buildings+1) * 1000)/ stability_development))) + 100 - nation_obj.stability,2)}%", (970, 890)),
         ]
         for stat_text, pos in stats_right:
             text = font.render(stat_text, True, (220, 220, 220))

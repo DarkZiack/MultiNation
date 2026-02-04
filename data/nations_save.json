@@ -41,7 +41,7 @@
         "safety": 105.39,
         "safety_buildings": 5
     },
-    "WWWWWWWWWWWWWWWWWWWW": {
+    "WWWWWWWWWWWWWWWWWWWWW": {
         "name": "WWWWWWWWWWWWWWWWWWWW",
         "population": 1000000,
         "population_density": 1000.0,
@@ -1165,5 +1165,30 @@
         "education_buildings": 2,
         "safety": 122.07,
         "safety_buildings": 3
+    },
+    "Manolo": {
+        "name": "Manolo",
+        "population": 101831.0,
+        "population_density": 3.2848709677419357,
+        "income": 16009900.3693,
+        "balance": 922815.166666667,
+        "gdp": 5843613634.7945,
+        "gdp_per_capita": 57385.4095,
+        "area": 31000,
+        "infrastructure": 3000,
+        "world_region": "Nordhelm",
+        "tax": 10,
+        "commerce": 192.44,
+        "commerce_buildings": 14,
+        "transport": 171.53,
+        "transport_buildings": 10,
+        "stability": 157.31,
+        "stability_buildings": 4,
+        "healthcare": 127.73,
+        "healthcare_buildings": 4,
+        "education": 145.85,
+        "education_buildings": 5,
+        "safety": 127.73,
+        "safety_buildings": 4
     }
 }
