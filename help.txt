@@ -1,6 +1,0 @@
-commerce_button = pygame.Rect(350, 250, 300, 50)
-transport_button = pygame.Rect(350, 600, 300, 50)
-stability_button = pygame.Rect(350, 950, 300, 50)
-healthcare_button = pygame.Rect(970, 250, 300, 50)
-education_button = pygame.Rect(970, 600, 300, 50)
-safety_button = pygame.Rect(970, 950, 300, 50)
