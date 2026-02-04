@@ -132,24 +132,35 @@ while not setup_done:
     pygame.display.flip()
     clock.tick(FPS)
 
-#  UI ELEMENTS --------------------
+#  UI ELEMENTS ----
 upgrade_button = pygame.Rect(50, 480, 300, 50)
 exit_button = pygame.Rect(WIDTH - 350, HEIGHT - 100, 300, 50)
-commerce_button = pygame.Rect(50, 540, 300, 50)
-transport_button = pygame.Rect(400, 540, 300, 50)
-land_button = pygame.Rect(50, 600, 300, 50)
-infrastructure_button = pygame.Rect(400, 600, 300, 50)
-stability_button = pygame.Rect(50, 660, 300, 50)
-healthcare_button = pygame.Rect(400, 660, 300, 50)
-education_button = pygame.Rect(50, 720, 300, 50)
-safety_button = pygame.Rect(400, 720, 300, 50)
+# Buildings
 
-# PANEL STATE --------------------
+commerce_button = pygame.Rect(350, 250, 300, 50)
+transport_button = pygame.Rect(350, 600, 300, 50)
+stability_button = pygame.Rect(970, 950, 300, 50)
+healthcare_button = pygame.Rect(350, 950, 300, 50)
+education_button = pygame.Rect(970, 250, 300, 50) 
+safety_button = pygame.Rect(970, 600, 300, 50) 
+
+commercial_image = pygame.image.load("data/assets/commercial.jpg")
+transport_image = pygame.image.load("data/assets/transport.jpg")
+education_image = pygame.image.load("data/assets/education.jpg")
+healthcare_image = pygame.image.load("data/assets/healthcare.jpg")
+safety_image = pygame.image.load("data/assets/safety.jpg")
+stability_image = pygame.image.load("data/assets/stability.jpg")
+
+# Investments
+land_button = pygame.Rect(50, 660, 300, 50)
+infrastructure_button = pygame.Rect(400, 660, 300, 50)
+
+# PANEL STATE ----
 panel_is_open = False
 panel_x = PANEL_CLOSED_X
 panel_screen = "nation"
 
-# MAIN LOOP --------------------
+# MAIN LOOP ----
 running = True
 timer = 0
 timer_minute = 0
@@ -176,9 +187,7 @@ while running:
     nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
                         / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100,2)
 
-    # Transportation Index (Roads) ----
-    
-        # Transportation Development
+    # ---- Transportation Development ----
     integrated_public_transport = 0        # future tech / policy
     bonus_transport_dev_reduction = 0       # modifiers
     development = nation_obj.infrastructure # using infrastructure as dev proxy
@@ -189,7 +198,6 @@ while running:
         + bonus_transport_dev_reduction
         + (development + nation_obj.area) / 10)
     transportation_development = max(transportation_development, 1)
-    
     roads = nation_obj.transport_buildings
     bonus_roads = 0
     transportation_eff = 1                 # efficiency modifier
@@ -197,7 +205,35 @@ while running:
     national_highway_system = 0
     nation_obj.transport = round(
         (100 * math.sqrt(((roads + bonus_roads) * transportation_eff * 200)/ transportation_development)
-         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4)+100,2)
+         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* 
+        (1+ bonus_road_output / 100+ national_highway_system / 4) + 100,2)
+    
+    # Education Index ----
+    education_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    nation_obj.education = round(100 * math.sqrt((nation_obj.education_buildings * 3.33 * nation_obj.safety)
+                        / education_development)+(nation_obj.education_buildings * 10000) / education_development + 100,2)
+    
+    # Safety Index ----
+    
+    safety_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.safety = round(100 * math.sqrt((nation_obj.safety_buildings * 3.33)
+                        / safety_development)+(nation_obj.safety_buildings * 10000) / safety_development + 100,2)
+    
+    # Healthcare Index
+    
+    healthcare_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 3.33)
+                        / healthcare_development)+(nation_obj.healthcare_buildings * 10000) / healthcare_development + 100,2)
+    
+    # Stability Index
+    
+    stability_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    
+    nation_obj.stability = round(
+        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
+         + ((100 * math.sqrt(((nation_obj.stability_buildings) * 1000)/ stability_development))) + 100,2)
     
     # Income Calculation ----
     commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
@@ -211,7 +247,7 @@ while running:
     nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
     
     # Population Stats ----
-    population_growth_per_minute = round((nation_obj.population * 0.0015) * min((nation_obj.healthcare / 100), 1))
+    population_growth_per_minute = round((nation_obj.population * 0.015) * (nation_obj.healthcare / 100), 1)
     nation_obj.population_density = nation_obj.calculate_density()
     if timer_minute >= 60:
         nation_obj.population += population_growth_per_minute 
@@ -277,11 +313,9 @@ while running:
                 if land_button.collidepoint(event.pos):
                     nation_obj.area += 1000
                     nation_obj.balance -= 100000
-                    calculate_building_slots
                 if infrastructure_button.collidepoint(event.pos):
                     nation_obj.infrastructure += 100
                     nation_obj.balance -= 100000
-                    calculate_building_slots
 
             # Panel events: dynamic toggle attached to panel edge
             toggle_rect = pygame.Rect(int(panel_x) - 40, 0, 40, 50)
@@ -412,6 +446,7 @@ while running:
             f"Nation: {nation_obj.name}",
             f"Income: ${abbreviate_number(nation_obj.income)}",
             f"Population: {abbreviate_number(nation_obj.population)}",
+            f"Population Growth/min: {abbreviate_number(population_growth_per_minute)}",
             f"Infrastructure: {nation_obj.infrastructure}",
             f"Area: {abbreviate_number(nation_obj.area)} sq km",
             f"GDP: ${abbreviate_number(nation_obj.gdp)}",
@@ -439,21 +474,79 @@ while running:
             y += 40
     
     elif panel_screen == "buildings":
-        pygame.draw.rect(screen, (200, 80, 80), exit_button)
-        pygame.draw.rect(screen, (60, 140, 220), commerce_button)
-        pygame.draw.rect(screen, (60, 140, 220), transport_button)
-        pygame.draw.rect(screen, (60, 140, 220), stability_button)
-        pygame.draw.rect(screen, (60, 140, 220), healthcare_button)
-        pygame.draw.rect(screen, (60, 140, 220), education_button)
-        pygame.draw.rect(screen, (60, 140, 220), safety_button)
+        
+        building_buttons = [
+            (commerce_button, (60, 90, 220), f"Commerce Building ({nation_obj.commerce_buildings})"),
+            (transport_button, (60, 90, 220), f"Transport Building ({nation_obj.transport_buildings})"),
+            (stability_button, (60, 90, 220), f"Stability Building ({nation_obj.stability_buildings})"),
+            (healthcare_button, (60, 90, 220), f"Healthcare Building ({nation_obj.healthcare_buildings})"),
+            (education_button, (60, 90, 220), f"Education Building ({nation_obj.education_buildings})"),
+            (safety_button, (60, 90, 220), f"Safety Building ({nation_obj.safety_buildings})"),
+        ]
 
-        screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
-        screen.blit(font.render("Commerce Buildings +1", True, (255, 255, 255)),(commerce_button.x + 20, commerce_button.y + 12))
-        screen.blit(font.render("Transport Buildings +1", True, (255, 255, 255)),(transport_button.x + 20, transport_button.y + 12))
-        screen.blit(font.render("Stability Buildings +1", True, (255, 255, 255)),(stability_button.x + 20, stability_button.y + 12))
-        screen.blit(font.render("Healthcare Buildings +1", True, (255, 255, 255)),(healthcare_button.x + 20, healthcare_button.y + 12))
-        screen.blit(font.render("Education Buildings +1", True, (255, 255, 255)),(education_button.x + 20, education_button.y + 12))
-        screen.blit(font.render("Safety Buildings +1", True, (255, 255, 255)),(safety_button.x + 20, safety_button.y + 12))
+        pygame.draw.rect(screen, (200, 80, 80), exit_button)
+        screen.blit(font.render(f"Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
+
+        for button_rect, color, label in building_buttons:
+            pygame.draw.rect(screen, color, button_rect)
+            screen.blit(font.render(label, True, (255, 255, 255)),(button_rect.x + 20, button_rect.y + 12))
+
+        stats_right = [
+            (f"Building Slots: {used_building_slots}/{nation_obj.building_slots}", (500, 30)),
+            # First line
+            (f"Owned: {nation_obj.commerce_buildings}", (350, 110)),
+            (f"Commerce: {nation_obj.commerce}%", (350, 150)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.commerce_buildings+1) * 3.33 * nation_obj.transport)
+                        / commerce_development)+((nation_obj.commerce_buildings+1) * 10000) / commerce_development + 100 - nation_obj.commerce,2)}%", (350, 190)),
+            (f"Owned: {nation_obj.transport_buildings}", (350, 460)),
+            (f"Transport: {nation_obj.transport}%", (350, 500)),
+            (f"+ {round((100 * math.sqrt(((roads+1 + bonus_roads) * transportation_eff * 200)/ transportation_development)
+                        + (((roads+1 + bonus_roads) * transportation_eff * 10000)/ transportation_development))* 
+                        (1+ bonus_road_output / 100+ national_highway_system / 4) + 100 - nation_obj.transport,2)}%", (350, 540)),
+            (f"Owned: {nation_obj.healthcare_buildings}", (350, 810)),
+            (f"Healthcare {nation_obj.healthcare}%", (350, 850)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.healthcare_buildings+1) * 3.33)
+                        / healthcare_development)+((nation_obj.healthcare_buildings+1) * 10000) / healthcare_development + 100 - nation_obj.healthcare,2)}%", (350, 890)),
+            # Second line
+            (f"Owned: {nation_obj.education_buildings}", (970, 110)),
+            (f"Education: {nation_obj.education}%", (970, 150)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.education_buildings+1) * 3.33 * nation_obj.safety)
+                        / education_development)+((nation_obj.education_buildings+1) * 10000) / education_development + 100 - nation_obj.education,2)}%", (970, 190)),
+            (f"Owned: {nation_obj.safety_buildings}", (970, 460)),
+            (f"Safety: {nation_obj.safety}%", (970, 500)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.safety_buildings+1) * 3.33)
+                        / safety_development)+((nation_obj.safety_buildings+1) * 10000) / safety_development + 100 - nation_obj.safety,2)}%", (970, 540)),
+            (f"Owned: {nation_obj.stability_buildings}", (970, 810)),
+            (f"Stability: {nation_obj.stability}%", (970, 850)),
+            (f"+ {round(
+                        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
+                        + ((100 * math.sqrt(((nation_obj.stability_buildings+1) * 1000)/ stability_development))) + 100 - nation_obj.stability,2)}%", (970, 890)),
+        ]
+        for stat_text, pos in stats_right:
+            text = font.render(stat_text, True, (220, 220, 220))
+            screen.blit(text, pos)
+
+        # Optional: resize image
+        commercial_image = pygame.transform.scale(commercial_image, (225, 225))
+        transport_image = pygame.transform.scale(transport_image, (225, 225))
+        education_image = pygame.transform.scale(education_image, (225, 225))
+        healthcare_image = pygame.transform.scale(healthcare_image, (225, 225))
+        safety_image = pygame.transform.scale(safety_image, (225, 225))
+        stability_image = pygame.transform.scale(stability_image, (225, 225))
+
+        images = [
+            (commercial_image, (100, 100)),
+            (transport_image, (100, 450)),
+            (safety_image, (720, 450)),
+            (education_image, (720, 100)),
+            (healthcare_image, (100, 800)),
+            (stability_image, (720, 800)),
+        ]
+        for img, pos in images:
+            screen.blit(img, pos)
+        
+        
+        
 
     elif panel_screen == "investments":
         pygame.draw.rect(screen, (200, 80, 80), exit_button)
