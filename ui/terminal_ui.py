@@ -152,8 +152,8 @@ safety_image = pygame.image.load("data/assets/safety.jpg")
 stability_image = pygame.image.load("data/assets/stability.jpg")
 
 # Investments
-land_button = pygame.Rect(50, 660, 300, 50)
-infrastructure_button = pygame.Rect(400, 660, 300, 50)
+land_button = pygame.Rect(350, 660, 300, 50)
+infrastructure_button = pygame.Rect(970, 660, 300, 50)
 
 infrastructure_image = pygame.image.load("data/assets/infrastructure.jpg")
 area_image = pygame.image.load("data/assets/area.jpg")
