@@ -151,12 +151,27 @@ healthcare_image = pygame.image.load("data/assets/healthcare.jpg")
 safety_image = pygame.image.load("data/assets/safety.jpg")
 stability_image = pygame.image.load("data/assets/stability.jpg")
 
+IMAGE_SIZE_BUILDINGS = (225, 225)
+
+commercial_image = pygame.transform.smoothscale(pygame.image.load("data/assets/commercial.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+transport_image = pygame.transform.smoothscale(pygame.image.load("data/assets/transport.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+education_image = pygame.transform.smoothscale(pygame.image.load("data/assets/education.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+healthcare_image = pygame.transform.smoothscale(pygame.image.load("data/assets/healthcare.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+safety_image = pygame.transform.smoothscale(pygame.image.load("data/assets/safety.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+stability_image = pygame.transform.smoothscale(pygame.image.load("data/assets/stability.jpg").convert_alpha(),IMAGE_SIZE_BUILDINGS)
+
+
 # Investments
-land_button = pygame.Rect(350, 660, 300, 50)
-infrastructure_button = pygame.Rect(970, 660, 300, 50)
+land_button = pygame.Rect(100, 390, 480, 50)
+infrastructure_button = pygame.Rect(720, 390, 480, 50)
 
 infrastructure_image = pygame.image.load("data/assets/infrastructure.jpg")
 area_image = pygame.image.load("data/assets/area.jpg")
+
+IMAGE_SIZE_INVESTMENTS = (480, 270)
+
+infrastructure_image = pygame.transform.smoothscale(pygame.image.load("data/assets/infrastructure.jpg").convert_alpha(),IMAGE_SIZE_INVESTMENTS)
+area_image = pygame.transform.smoothscale(pygame.image.load("data/assets/area.jpg").convert_alpha(),IMAGE_SIZE_INVESTMENTS)
 
 # PANEL STATE ----
 panel_is_open = False
@@ -190,7 +205,7 @@ while running:
     nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
                         / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100,2)
 
-    # ---- Transportation Development ----
+    # Transportation Development ----
     integrated_public_transport = 0        # future tech / policy
     bonus_transport_dev_reduction = 0       # modifiers
     development = nation_obj.infrastructure # using infrastructure as dev proxy
@@ -305,13 +320,13 @@ while running:
                     nation_obj.balance -= 100_000 * (1.08 ** nation_obj.safety_buildings)
             
             # Dev
-            infrastructure_cost_reduction = (nation_obj.infrastructure / nation_obj.area) ** 2
             if land_button.collidepoint(event.pos) and nation_obj.balance >= (100 * (nation_obj.area / 100) ** 2) / 2:
                 nation_obj.area += 100
                 nation_obj.balance -= (100 * (nation_obj.area / 100) ** 2) / 2
             if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2):
                 nation_obj.infrastructure += 100
                 nation_obj.balance -= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)
+            infrastructure_cost_reduction = max((nation_obj.infrastructure / (nation_obj.area*0.9)) ** 2, 0)
 
             # Panel events: dynamic toggle attached to panel edge
             toggle_rect = pygame.Rect(int(panel_x) - 40, 0, 40, 50)
@@ -479,14 +494,6 @@ while running:
             text = font.render(stat_text, True, (220, 220, 220))
             screen.blit(text, pos)
 
-        # Optional: resize image
-        commercial_image = pygame.transform.scale(commercial_image, (225, 225))
-        transport_image = pygame.transform.scale(transport_image, (225, 225))
-        education_image = pygame.transform.scale(education_image, (225, 225))
-        healthcare_image = pygame.transform.scale(healthcare_image, (225, 225))
-        safety_image = pygame.transform.scale(safety_image, (225, 225))
-        stability_image = pygame.transform.scale(stability_image, (225, 225))
-
         images = [
             (commercial_image, (100, 100)),
             (transport_image, (100, 450)),
@@ -508,9 +515,16 @@ while running:
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
         screen.blit(font.render(f"Land +100 sq km (${abbreviate_number((100 * (nation_obj.area / 100) ** 2) / 2)})", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
         screen.blit(font.render(f"Infrastructure +100 (${abbreviate_number(infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)})", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
-
-        infrastructure_image = pygame.transform.scale(infrastructure_image, (480, 270))
-        area_image = pygame.transform.scale(area_image, (480, 270))
+        
+        stats_right = [
+            (f"Building Slots: {used_building_slots}/{nation_obj.building_slots}", (500, 30)),
+            (f"Owned: {nation_obj.area}", (110,460)),
+            (f"Owned: {nation_obj.infrastructure}", (720, 460)),
+            (f"Cost Reduction: {abbreviate_number(max((1 - infrastructure_cost_reduction) * 100, 0))}%", (720, 500)),
+        ]
+        for stat_text, pos in stats_right:
+            text = font.render(stat_text, True, (220, 220, 220))
+            screen.blit(text, pos)
         
         images = [
             (area_image, (100, 110)),
