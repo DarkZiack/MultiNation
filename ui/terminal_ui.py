@@ -271,11 +271,6 @@ while running:
             save_nation(nation_obj, file_path)
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            
-            if nation_obj.balance >= 100000:
-                if upgrade_button.collidepoint(event.pos):
-                    nation_obj.population += 10000
-                    nation_obj.balance -= 100000
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
@@ -287,35 +282,33 @@ while running:
                 + nation_obj.education_buildings + nation_obj.safety_buildings
             )
             if used_building_slots < nation_obj.building_slots:
-                if nation_obj.balance >= 1000000:
-                    if commerce_button.collidepoint(event.pos):
-                        nation_obj.commerce_buildings += 1
-                        nation_obj.balance -= 100000
-                    elif transport_button.collidepoint(event.pos):
-                        nation_obj.transport_buildings += 1
-                        nation_obj.balance -= 100000
-                    elif stability_button.collidepoint(event.pos):
-                        nation_obj.stability_buildings += 1
-                        nation_obj.balance -= 100000
-                    elif healthcare_button.collidepoint(event.pos):
-                        nation_obj.healthcare_buildings += 1
-                        nation_obj.balance -= 100000
-                    elif education_button.collidepoint(event.pos):
-                        nation_obj.education_buildings += 1
-                        nation_obj.balance -= 100000
-                    elif safety_button.collidepoint(event.pos):
-                        nation_obj.safety_buildings += 1
-                        nation_obj.balance -= 100000
+                if commerce_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.commerce_buildings))):
+                    nation_obj.commerce_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.commerce_buildings)
+                elif transport_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.transport_buildings))):
+                    nation_obj.transport_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.transport_buildings)
+                elif stability_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.stability_buildings))):
+                    nation_obj.stability_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.stability_buildings)
+                elif healthcare_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.healthcare_buildings))):
+                    nation_obj.healthcare_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.healthcare_buildings)
+                elif education_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.education_buildings))):
+                    nation_obj.education_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.education_buildings)
+                elif safety_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.safety_buildings))):
+                    nation_obj.safety_buildings += 1
+                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.safety_buildings)
             
             # Dev
-            
-            if nation_obj.balance >= 100000:
-                if land_button.collidepoint(event.pos):
-                    nation_obj.area += 1000
-                    nation_obj.balance -= 100000
-                if infrastructure_button.collidepoint(event.pos):
-                    nation_obj.infrastructure += 100
-                    nation_obj.balance -= 100000
+            infrastructure_cost_reduction = (nation_obj.infrastructure / nation_obj.area) ** 2
+            if land_button.collidepoint(event.pos) and nation_obj.balance >= (100 * (nation_obj.area / 100) ** 2) / 2:
+                nation_obj.area += 100
+                nation_obj.balance -= (100 * (nation_obj.area / 100) ** 2) / 2
+            if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2):
+                nation_obj.infrastructure += 100
+                nation_obj.balance -= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)
 
             # Panel events: dynamic toggle attached to panel edge
             toggle_rect = pygame.Rect(int(panel_x) - 40, 0, 40, 50)
@@ -347,45 +340,10 @@ while running:
                     + nation_obj.stability_buildings + nation_obj.healthcare_buildings
                     + nation_obj.education_buildings + nation_obj.safety_buildings
                 )
-                if back_button.collidepoint(event.pos):
-                    panel_screen = "main"
-                elif used_building_slots < nation_obj.building_slots and nation_obj.balance >= 1000000:
-                    if commerce_panel_button.collidepoint(event.pos):
-                        nation_obj.commerce_buildings += 1
-                        nation_obj.balance -= 1000000
-                    elif transport_panel_button.collidepoint(event.pos):
-                        nation_obj.transport_buildings += 1
-                        nation_obj.balance -= 1000000
-                    elif stability_panel_button.collidepoint(event.pos):
-                        nation_obj.stability_buildings += 1
-                        nation_obj.balance -= 1000000
-                    elif healthcare_panel_button.collidepoint(event.pos):
-                        nation_obj.healthcare_buildings += 1
-                        nation_obj.balance -= 1000000
-                    elif education_panel_button.collidepoint(event.pos):
-                        nation_obj.education_buildings += 1
-                        nation_obj.balance -= 1000000
-                    elif safety_panel_button.collidepoint(event.pos):
-                        nation_obj.safety_buildings += 1
-                        nation_obj.balance -= 1000000
-
             elif panel_screen == "investments":
-                pop_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
                 land_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
                 infra_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
                 back_button = pygame.Rect(panel_x + 20, 420, PANEL_WIDTH - 40, 40)
-                if back_button.collidepoint(event.pos):
-                    panel_screen = "main"
-                elif nation_obj.balance >= 100000:
-                    if pop_panel_button.collidepoint(event.pos):
-                        nation_obj.population += 10000
-                        nation_obj.balance -= 100000
-                    elif land_panel_button.collidepoint(event.pos):
-                        nation_obj.area += 1000
-                        nation_obj.balance -= 100000
-                    elif infra_panel_button.collidepoint(event.pos):
-                        nation_obj.infrastructure += 100
-                        nation_obj.balance -= 100000
 
     # Draw ----
     
@@ -476,12 +434,12 @@ while running:
     elif panel_screen == "buildings":
         
         building_buttons = [
-            (commerce_button, (60, 90, 220), f"Commerce Building ({nation_obj.commerce_buildings})"),
-            (transport_button, (60, 90, 220), f"Transport Building ({nation_obj.transport_buildings})"),
-            (stability_button, (60, 90, 220), f"Stability Building ({nation_obj.stability_buildings})"),
-            (healthcare_button, (60, 90, 220), f"Healthcare Building ({nation_obj.healthcare_buildings})"),
-            (education_button, (60, 90, 220), f"Education Building ({nation_obj.education_buildings})"),
-            (safety_button, (60, 90, 220), f"Safety Building ({nation_obj.safety_buildings})"),
+            (commerce_button, (60, 90, 220), f"Commercial (${abbreviate_number(100_000 * (1.08 ** nation_obj.commerce_buildings))})"),
+            (transport_button, (60, 90, 220), f"Transport (${abbreviate_number(100_000 * (1.08 ** nation_obj.transport_buildings))})"),
+            (stability_button, (60, 90, 220), f"Stability (${abbreviate_number(100_000 * (1.08 ** nation_obj.stability_buildings))})"),
+            (healthcare_button, (60, 90, 220), f"Healthcare (${abbreviate_number(100_000 * (1.08 ** nation_obj.healthcare_buildings))})"),
+            (education_button, (60, 90, 220), f"Education (${abbreviate_number(100_000 * (1.08 ** nation_obj.education_buildings))})"),
+            (safety_button, (60, 90, 220), f"Safety (${abbreviate_number(100_000 * (1.08 ** nation_obj.safety_buildings))})"),
         ]
 
         pygame.draw.rect(screen, (200, 80, 80), exit_button)
@@ -554,9 +512,8 @@ while running:
         pygame.draw.rect(screen, (60, 140, 220), land_button)
         pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
-        screen.blit(font.render("Land +1000 sq km", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
-        screen.blit(font.render("Infrastructure +1000", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
-        screen.blit(font.render("Population Upgrade (+100k)", True, (255, 255, 255)),(upgrade_button.x + 20, upgrade_button.y + 12))
+        screen.blit(font.render(f"Land +100 sq km (${abbreviate_number((100 * (nation_obj.area / 100) ** 2) / 2)})", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
+        screen.blit(font.render(f"Infrastructure +100 (${abbreviate_number(infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)})", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
 
     pygame.display.flip()
     clock.tick(FPS)
