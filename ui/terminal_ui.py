@@ -155,6 +155,9 @@ stability_image = pygame.image.load("data/assets/stability.jpg")
 land_button = pygame.Rect(50, 660, 300, 50)
 infrastructure_button = pygame.Rect(400, 660, 300, 50)
 
+infrastructure_image = pygame.image.load("data/assets/infrastructure.jpg")
+area_image = pygame.image.load("data/assets/area.jpg")
+
 # PANEL STATE ----
 panel_is_open = False
 panel_x = PANEL_CLOSED_X
@@ -506,6 +509,18 @@ while running:
         screen.blit(font.render(f"Land +100 sq km (${abbreviate_number((100 * (nation_obj.area / 100) ** 2) / 2)})", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
         screen.blit(font.render(f"Infrastructure +100 (${abbreviate_number(infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)})", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
 
+        infrastructure_image = pygame.transform.scale(infrastructure_image, (480, 270))
+        area_image = pygame.transform.scale(area_image, (480, 270))
+        
+        images = [
+            (area_image, (100, 110)),
+            (infrastructure_image, (720, 110)),
+        ]
+        for img, pos in images:
+            screen.blit(img, pos)
+        
+        
+        
     pygame.display.flip()
     clock.tick(FPS)
 
