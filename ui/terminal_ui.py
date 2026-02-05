@@ -500,7 +500,6 @@ while running:
 
     elif panel_screen == "investments":
         pygame.draw.rect(screen, (200, 80, 80), exit_button)
-        pygame.draw.rect(screen, (60, 140, 220), upgrade_button)
         pygame.draw.rect(screen, (60, 140, 220), land_button)
         pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
