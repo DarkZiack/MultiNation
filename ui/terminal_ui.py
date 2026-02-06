@@ -302,36 +302,37 @@ while running:
                 + nation_obj.stability_buildings + nation_obj.healthcare_buildings
                 + nation_obj.education_buildings + nation_obj.safety_buildings
             )
-            if used_building_slots < nation_obj.building_slots:
-                if commerce_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.commerce_buildings))):
-                    nation_obj.commerce_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.commerce_buildings)
-                elif transport_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.transport_buildings))):
-                    nation_obj.transport_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.transport_buildings)
-                elif stability_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.stability_buildings))):
-                    nation_obj.stability_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.stability_buildings)
-                elif healthcare_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.healthcare_buildings))):
-                    nation_obj.healthcare_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.healthcare_buildings)
-                elif education_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.education_buildings))):
-                    nation_obj.education_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.education_buildings)
-                elif safety_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.safety_buildings))):
-                    nation_obj.safety_buildings += 1
-                    nation_obj.balance -= 100_000 * (1.08 ** nation_obj.safety_buildings)
-            
+            if panel_screen == "buildings":
+                if used_building_slots < nation_obj.building_slots:
+                    if commerce_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.commerce_buildings))):
+                        nation_obj.commerce_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.commerce_buildings)
+                    elif transport_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.transport_buildings))):
+                        nation_obj.transport_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.transport_buildings)
+                    elif stability_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.stability_buildings))):
+                        nation_obj.stability_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.stability_buildings)
+                    elif healthcare_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.healthcare_buildings))):
+                        nation_obj.healthcare_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.healthcare_buildings)
+                    elif education_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.education_buildings))):
+                        nation_obj.education_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.education_buildings)
+                    elif safety_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.safety_buildings))):
+                        nation_obj.safety_buildings += 1
+                        nation_obj.balance -= 100_000 * (1.08 ** nation_obj.safety_buildings)
+                
             # Dev
-            
-            if land_button.collidepoint(event.pos) and nation_obj.balance >= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2:
-                nation_obj.balance -= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2
-                nation_obj.area += (float(quantityland_input) if quantityland_input else 0)
-                quantityland_input = ""
-            if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* (float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2):
-                nation_obj.balance -= (infrastructure_cost_reduction*(float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2)
-                nation_obj.infrastructure += (float(quantityinfra_input) if quantityinfra_input else 0)
-                quantityinfra_input = ""
+            if panel_screen == "investments":
+                if land_button.collidepoint(event.pos) and nation_obj.balance >= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2:
+                    nation_obj.balance -= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2
+                    nation_obj.area += (float(quantityland_input) if quantityland_input else 0)
+                    quantityland_input = ""
+                if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* (float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2):
+                    nation_obj.balance -= (infrastructure_cost_reduction*(float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2)
+                    nation_obj.infrastructure += (float(quantityinfra_input) if quantityinfra_input else 0)
+                    quantityinfra_input = ""
             infrastructure_cost_reduction = max((nation_obj.infrastructure / (nation_obj.area*0.9)) ** 2, 0)
 
             # Panel events: dynamic toggle attached to panel edge
