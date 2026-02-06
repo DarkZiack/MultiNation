@@ -39,9 +39,17 @@ else:
 
 # -------------------- NATION SETUP (PYGAME MENU)  
 input_text = ""
+active_input = "land"
+quantityland_input = ""
+quantityinfra_input = ""
 phase = "name"  # name -> region -> done
 message = ""
 nation_obj = None
+# PANEL STATE ----
+panel_is_open = False
+panel_x = PANEL_CLOSED_X
+panel_screen = "nation"
+
 
 region_index = 0  # Track which region is selected
 available_regions = regions()  # List of regions
@@ -172,11 +180,6 @@ IMAGE_SIZE_INVESTMENTS = (480, 270)
 
 infrastructure_image = pygame.transform.smoothscale(pygame.image.load("data/assets/infrastructure.jpg").convert_alpha(),IMAGE_SIZE_INVESTMENTS)
 area_image = pygame.transform.smoothscale(pygame.image.load("data/assets/area.jpg").convert_alpha(),IMAGE_SIZE_INVESTMENTS)
-
-# PANEL STATE ----
-panel_is_open = False
-panel_x = PANEL_CLOSED_X
-panel_screen = "nation"
 
 # MAIN LOOP ----
 running = True
@@ -320,12 +323,15 @@ while running:
                     nation_obj.balance -= 100_000 * (1.08 ** nation_obj.safety_buildings)
             
             # Dev
-            if land_button.collidepoint(event.pos) and nation_obj.balance >= (100 * (nation_obj.area / 100) ** 2) / 2:
-                nation_obj.area += 100
-                nation_obj.balance -= (100 * (nation_obj.area / 100) ** 2) / 2
-            if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2):
-                nation_obj.infrastructure += 100
-                nation_obj.balance -= (infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)
+            
+            if land_button.collidepoint(event.pos) and nation_obj.balance >= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2:
+                nation_obj.balance -= ((float(quantityland_input) if quantityland_input else 0) * (nation_obj.area / 100) ** 2) / 2
+                nation_obj.area += (float(quantityland_input) if quantityland_input else 0)
+                quantityland_input = ""
+            if infrastructure_button.collidepoint(event.pos) and nation_obj.balance >= (infrastructure_cost_reduction* (float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2):
+                nation_obj.balance -= (infrastructure_cost_reduction*(float(quantityinfra_input) if quantityinfra_input else 0)* (nation_obj.infrastructure / 100) ** 2)
+                nation_obj.infrastructure += (float(quantityinfra_input) if quantityinfra_input else 0)
+                quantityinfra_input = ""
             infrastructure_cost_reduction = max((nation_obj.infrastructure / (nation_obj.area*0.9)) ** 2, 0)
 
             # Panel events: dynamic toggle attached to panel edge
@@ -358,10 +364,34 @@ while running:
                     + nation_obj.stability_buildings + nation_obj.healthcare_buildings
                     + nation_obj.education_buildings + nation_obj.safety_buildings
                 )
-            elif panel_screen == "investments":
-                land_panel_button = pygame.Rect(panel_x + 20, 270, PANEL_WIDTH - 40, 50)
-                infra_panel_button = pygame.Rect(panel_x + 20, 340, PANEL_WIDTH - 40, 50)
-                back_button = pygame.Rect(panel_x + 20, 420, PANEL_WIDTH - 40, 40)
+        
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB:
+                active_input = "infra" if active_input == "land" else "land"
+            elif event.key == pygame.K_BACKSPACE:
+                if active_input == "land":
+                    quantityland_input = quantityland_input[:-1]
+                else:
+                    quantityinfra_input = quantityinfra_input[:-1]
+            elif event.key == pygame.K_RETURN:
+                # Convert input strings to floats safely
+                try:
+                    quantityland = float(quantityland_input) if quantityland_input else 0
+                except ValueError:
+                    quantityland = 0
+                try:
+                    quantityinfra = float(quantityinfra_input) if quantityinfra_input else 0
+                except ValueError:
+                    quantityinfra = 0
+
+        # TEXTINPUT for actual typing
+        elif event.type == pygame.TEXTINPUT:
+            char = event.text
+            if char.isdigit():
+                if active_input == "land":
+                    quantityland_input += char
+                else:
+                    quantityinfra_input += char
 
     # Draw ----
     
@@ -413,7 +443,6 @@ while running:
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
         
         # Stats ----
-        
         used_building_slots = (
         nation_obj.commerce_buildings + nation_obj.transport_buildings
         + nation_obj.stability_buildings + nation_obj.healthcare_buildings
@@ -513,9 +542,9 @@ while running:
         pygame.draw.rect(screen, (60, 140, 220), land_button)
         pygame.draw.rect(screen, (60, 140, 220), infrastructure_button)
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
-        screen.blit(font.render(f"Land +100 sq km (${abbreviate_number((100 * (nation_obj.area / 100) ** 2) / 2)})", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 12))
-        screen.blit(font.render(f"Infrastructure +100 (${abbreviate_number(infrastructure_cost_reduction* 100* (nation_obj.infrastructure / 100) ** 2)})", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 12))
-        
+        screen.blit(font.render(f"Purchase {abbreviate_number(float(quantityland_input) if quantityland_input else 0)} Land for ${abbreviate_number(((float(quantityland_input) if quantityland_input else 0)  * (nation_obj.area / 100) ** 2) / 2)}", True, (255, 255, 255)),(land_button.x + 20, land_button.y + 15))
+        screen.blit(font.render(f"Purchase {abbreviate_number(float(quantityinfra_input) if quantityinfra_input else 0)} Infrastructure for ${abbreviate_number(infrastructure_cost_reduction* (float(quantityinfra_input) if quantityinfra_input else 0) * (nation_obj.infrastructure / 100) ** 2)}", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 15))
+
         stats_right = [
             (f"Building Slots: {used_building_slots}/{nation_obj.building_slots}", (500, 30)),
             (f"Owned: {nation_obj.area}", (110,460)),
@@ -532,6 +561,12 @@ while running:
         ]
         for img, pos in images:
             screen.blit(img, pos)
+        
+        pygame.draw.rect(screen, (255, 255, 255) if active_input == "land" else (180, 180, 180), (100, 645, 480, 30), 2)
+        pygame.draw.rect(screen, (255, 255, 255) if active_input == "infra" else (180, 180, 180), (720, 645, 480, 30), 2)
+        draw_text(screen, "Press TAB to switch", (100, 680), color=(220, 220, 220))
+        draw_text(screen, quantityland_input, (105, 650))
+        draw_text(screen, quantityinfra_input, (725, 650))
         
         
         
