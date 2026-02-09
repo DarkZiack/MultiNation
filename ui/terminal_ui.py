@@ -197,84 +197,6 @@ while running:
     if timer == 62:
         timer_minute += 1
         timer = 0
-
-
-    # Commerce Index ----
-    
-        # Economic growth
-    commerce_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
-    commerce_development = max(commerce_development, 1)
-    
-    nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
-                        / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100,2)
-
-    # Transportation Development ----
-    integrated_public_transport = 0        # future tech / policy
-    bonus_transport_dev_reduction = 0       # modifiers
-    development = nation_obj.infrastructure # using infrastructure as dev proxy
-
-    transportation_development = (
-        nation_obj.infrastructure *
-        (1 + integrated_public_transport / 20)
-        + bonus_transport_dev_reduction
-        + (development + nation_obj.area) / 10)
-    transportation_development = max(transportation_development, 1)
-    roads = nation_obj.transport_buildings
-    bonus_roads = 0
-    transportation_eff = 1                 # efficiency modifier
-    bonus_road_output = 0
-    national_highway_system = 0
-    nation_obj.transport = round(
-        (100 * math.sqrt(((roads + bonus_roads) * transportation_eff * 200)/ transportation_development)
-         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* 
-        (1+ bonus_road_output / 100+ national_highway_system / 4) + 100,2)
-    
-    # Education Index ----
-    education_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
-    nation_obj.education = round(100 * math.sqrt((nation_obj.education_buildings * 3.33 * nation_obj.safety)
-                        / education_development)+(nation_obj.education_buildings * 10000) / education_development + 100,2)
-    
-    # Safety Index ----
-    
-    safety_development = 2 * (nation_obj.population/100)
-    
-    nation_obj.safety = round(100 * math.sqrt((nation_obj.safety_buildings * 3.33)
-                        / safety_development)+(nation_obj.safety_buildings * 10000) / safety_development + 100,2)
-    
-    # Healthcare Index
-    
-    healthcare_development = 2 * (nation_obj.population/100)
-    
-    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 3.33)
-                        / healthcare_development)+(nation_obj.healthcare_buildings * 10000) / healthcare_development + 100,2)
-    
-    # Stability Index
-    
-    stability_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
-    
-    nation_obj.stability = round(
-        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
-         + ((100 * math.sqrt(((nation_obj.stability_buildings) * 1000)/ stability_development))) + 100,2)
-    
-    # Income Calculation ----
-    commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
-    transport_income = (nation_obj.population * (nation_obj.transport * 0.06))
-    healthcare_income = (nation_obj.population * (nation_obj.healthcare * 0.02))
-    safety_income = (nation_obj.population * (nation_obj.safety * 0.03))
-    education_income = (nation_obj.population * (nation_obj.education * 0.04))
-    tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
-    nation_obj.income = (commerce_income + tax_income + transport_income + healthcare_income + safety_income + education_income)
-    nation_obj.gdp = (nation_obj.income * 365)
-    nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
-    
-    # Population Stats ----
-    population_growth_per_minute = round((nation_obj.population * 0.015) * (nation_obj.healthcare / 100), 1)
-    nation_obj.population_density = nation_obj.calculate_density()
-    if timer_minute >= 60:
-        nation_obj.population += population_growth_per_minute 
-        nation_obj.balance += (nation_obj.income/1440)
-        timer_minute = 0
-
     save_nation(nation_obj, file_path)
 
     # Panel Animation ----
@@ -393,7 +315,83 @@ while running:
                     quantityland_input += char
                 else:
                     quantityinfra_input += char
+    # Update economic stats ----
+    # Commerce Index ----
+    
+        # Economic growth
+    commerce_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    commerce_development = max(commerce_development, 1)
+    
+    nation_obj.commerce = round(100 * math.sqrt((nation_obj.commerce_buildings * 3.33 * nation_obj.transport)
+                        / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100,2)
 
+    # Transportation Development ----
+    integrated_public_transport = 0        # future tech / policy
+    bonus_transport_dev_reduction = 0       # modifiers
+    development = nation_obj.infrastructure # using infrastructure as dev proxy
+
+    transportation_development = (
+        nation_obj.infrastructure *
+        (1 + integrated_public_transport / 20)
+        + bonus_transport_dev_reduction
+        + (development + nation_obj.area) / 10)
+    transportation_development = max(transportation_development, 1)
+    roads = nation_obj.transport_buildings
+    bonus_roads = 0
+    transportation_eff = 1                 # efficiency modifier
+    bonus_road_output = 0
+    national_highway_system = 0
+    nation_obj.transport = round(
+        (100 * math.sqrt(((roads + bonus_roads) * transportation_eff * 200)/ transportation_development)
+         + (((roads + bonus_roads) * transportation_eff * 10000)/ transportation_development))* 
+        (1+ bonus_road_output / 100+ national_highway_system / 4) + 100,2)
+    
+    # Education Index ----
+    education_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    nation_obj.education = round(100 * math.sqrt((nation_obj.education_buildings * 3.33 * nation_obj.safety)
+                        / education_development)+(nation_obj.education_buildings * 10000) / education_development + 100,2)
+    
+    # Safety Index ----
+    
+    safety_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.safety = round(100 * math.sqrt((nation_obj.safety_buildings * 3.33)
+                        / safety_development)+(nation_obj.safety_buildings * 10000) / safety_development + 100,2)
+    
+    # Healthcare Index
+    
+    healthcare_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 3.33)
+                        / healthcare_development)+(nation_obj.healthcare_buildings * 10000) / healthcare_development + 100,2)
+    
+    # Stability Index
+    
+    stability_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    
+    nation_obj.stability = round(
+        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
+         + ((100 * math.sqrt(((nation_obj.stability_buildings) * 1000)/ stability_development))) + 100,2)
+    
+    # Income Calculation ----
+    commerce_income = (nation_obj.population * (nation_obj.commerce * 0.1))
+    transport_income = (nation_obj.population * (nation_obj.transport * 0.06))
+    healthcare_income = (nation_obj.population * (nation_obj.healthcare * 0.02))
+    safety_income = (nation_obj.population * (nation_obj.safety * 0.03))
+    education_income = (nation_obj.population * (nation_obj.education * 0.04))
+    tax_income = (100 * (nation_obj.tax * ( nation_obj.population * 0.06)) * (nation_obj.commerce / 100))
+    nation_obj.income = (commerce_income + tax_income + transport_income + healthcare_income + safety_income + education_income)
+    nation_obj.gdp = (nation_obj.income * 365)
+    nation_obj.gdp_per_capita = (nation_obj.gdp/nation_obj.population)
+    
+    # Population Stats ----
+    population_growth_per_minute = round((nation_obj.population * 0.015) * (nation_obj.healthcare / 100), 1)
+    nation_obj.population_density = nation_obj.calculate_density()
+    if timer_minute >= 60:
+        nation_obj.population += population_growth_per_minute 
+        nation_obj.balance += (nation_obj.income/1440)
+        timer_minute = 0
+    
     # Draw ----
     
     screen.fill((25, 25, 30))
@@ -482,12 +480,12 @@ while running:
     elif panel_screen == "buildings":
         
         building_buttons = [
-            (commerce_button, (60, 90, 220), f"Commercial (${abbreviate_number(100_000 * (1.08 ** nation_obj.commerce_buildings))})"),
-            (transport_button, (60, 90, 220), f"Transport (${abbreviate_number(100_000 * (1.08 ** nation_obj.transport_buildings))})"),
-            (stability_button, (60, 90, 220), f"Stability (${abbreviate_number(100_000 * (1.08 ** nation_obj.stability_buildings))})"),
-            (healthcare_button, (60, 90, 220), f"Healthcare (${abbreviate_number(100_000 * (1.08 ** nation_obj.healthcare_buildings))})"),
-            (education_button, (60, 90, 220), f"Education (${abbreviate_number(100_000 * (1.08 ** nation_obj.education_buildings))})"),
-            (safety_button, (60, 90, 220), f"Safety (${abbreviate_number(100_000 * (1.08 ** nation_obj.safety_buildings))})"),
+            (commerce_button, (60, 90, 220), f"Commercial (${abbreviate_number(100_000 * (1.08 ** (nation_obj.commerce_buildings+1)))})"),
+            (transport_button, (60, 90, 220), f"Transport (${abbreviate_number(100_000 * (1.08 ** (nation_obj.transport_buildings+1)))})"),
+            (stability_button, (60, 90, 220), f"Stability (${abbreviate_number(100_000 * (1.08 ** (nation_obj.stability_buildings+1)))})"),
+            (healthcare_button, (60, 90, 220), f"Healthcare (${abbreviate_number(100_000 * (1.08 ** (nation_obj.healthcare_buildings+1)))})"),
+            (education_button, (60, 90, 220), f"Education (${abbreviate_number(100_000 * (1.08 ** (nation_obj.education_buildings+1)))})"),
+            (safety_button, (60, 90, 220), f"Safety (${abbreviate_number(100_000 * (1.08 ** (nation_obj.safety_buildings+1)))})"),
         ]
 
         pygame.draw.rect(screen, (200, 80, 80), exit_button)
