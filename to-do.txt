@@ -1,0 +1,17 @@
++ 3 Buildings
+Research Center
+Toursim Complex (Commerce and Education)
+Industrial Building (Commerce)
++ Tech Currency
+
++ Political Power
+
++ War Tab + 3 Buildings
+Millitary Base = infra / 500
+Millitary Airbase = infra / 500
+Naval Base = infra / 500
+
+0, # Research Buildings
+0, # Turism Buildings
+100, # Industrial
+0, # Industrial Buildigs

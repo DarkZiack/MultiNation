@@ -44,7 +44,11 @@ def save_nation(nation_obj, file_path):
         "education": nation_obj.education,
         "education_buildings": nation_obj.education_buildings,
         "safety": nation_obj.safety,
-        "safety_buildings": nation_obj.safety_buildings
+        "safety_buildings": nation_obj.safety_buildings,
+        "research_buildings": nation_obj.research_buildings,
+        "tourism_buildings": nation_obj.tourism_buildings,
+        "industrial": nation_obj.industrial,
+        "industrial_buildings": nation_obj.industrial_buildings,
     }
 
     with open(file_path, 'w') as f:
@@ -59,7 +63,7 @@ def load_nation(file_path, name):
 
     if name not in data:
         # Nation does not exist → create new with default values
-        return nation(name, 1000000, 1000, 1000, 100, 100, 5, 10, 100, 5, 100, 100, 10, "Unknown")
+        return nation(name, 1000000, 1000, 1000, 100, 100, 5, 10, 100, 5, 5, 5, 5, 5, 100, 100, 10, "Unknown")
 
     n = data[name]
 
@@ -82,6 +86,10 @@ def load_nation(file_path, name):
         n["education_buildings"],
         n["safety"],
         n["safety_buildings"],
+        n["research_buildings"],
+        n["tourism_buildings"],
+        n["industrial"],
+        n["industrial_buildings"],
         n["gdp"],
         n["gdp_per_capita"],
         n["tax"],
