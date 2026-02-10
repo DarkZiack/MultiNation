@@ -1,7 +1,7 @@
 class nation:
-    def __init__(self, name, population, infrastructure, area, income, balance, commerce, commerce_buildings, 
+    def __init__(self, name, population, infrastructure, area, income, balance, tech_income, tech_balance, commerce, commerce_buildings, 
                 transport, transport_buildings, stability, stability_buildings, healthcare, healthcare_buildings
-                , education, education_buildings, safety, safety_buildings , research_buildings, tourism_buildings, industrial,
+                , education, education_buildings, safety, safety_buildings , research_buildings, historic_buildings, industrial,
                 industrial_buildings, gdp, gdp_per_capita, tax, world_region=None):
         
         self.name = name
@@ -13,6 +13,8 @@ class nation:
         self.income = income
         self.tax = tax
         self.balance = balance
+        self.tech_income = tech_income
+        self.tech_balance = tech_balance
         self.gdp = gdp
         self.gdp_per_capita = gdp_per_capita
         self.commerce = commerce
@@ -28,7 +30,7 @@ class nation:
         self.safety = safety
         self.safety_buildings = safety_buildings
         self.research_buildings = research_buildings
-        self.tourism_buildings = tourism_buildings
+        self.historic_buildings = historic_buildings
         self.industrial = industrial
         self.industrial_buildings = industrial_buildings
 

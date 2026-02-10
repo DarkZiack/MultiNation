@@ -1,8 +1,9 @@
-+ 3 Buildings
-Research Center
-Toursim Complex (Commerce and Education)
-Industrial Building (Commerce)
-+ Tech Currency
+    + 3 Buildings
+    Research Center
+    Toursim Complex (Commerce and Education)
+    Industrial Building (Commerce)
+
+    + Tech Currency
 
 + Political Power
 
@@ -15,3 +16,4 @@ Naval Base = infra / 500
 0, # Turism Buildings
 100, # Industrial
 0, # Industrial Buildigs
+
