@@ -10,7 +10,8 @@ Built with Python and PyGame, this project lets you customize your own simulatio
 
  ✔ Buildings and Indexes <br/>
  ✔ Investments and Territory Expansion <br/>
- ✖ Tech and Upgrades <br/>
+ ✔ Search Nations Tool <br/>
+ ✖ Tech Upgrades <br/>
  ✖ AI <br/>
  ✖ Wars <br/>
 

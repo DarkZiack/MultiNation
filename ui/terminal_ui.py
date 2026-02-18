@@ -330,12 +330,11 @@ while running:
                     spectated_nation = None
                     search_message = ""
                 # Activate search box if clicked
-                search_box = pygame.Rect(panel_x + 20, 980, PANEL_WIDTH - 40, 50)
+                search_box = pygame.Rect(panel_x + 20, 950, PANEL_WIDTH - 40, 50)
                 if search_box.collidepoint(event.pos):
                     search_active = True
                 else:
                     search_active = False
-
 
             elif panel_screen == "buildings":
                 commerce_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
@@ -384,6 +383,7 @@ while running:
                         user_search = ""
                     else:
                         search_message = "Nation not found."
+                        user_search = ""
                 else:
                     # Any other key adds a character → clear the message
                     search_message = ""
@@ -522,11 +522,11 @@ while running:
             f"Income: ${abbreviate_number(display_nation.income)}",
             f"Population: {abbreviate_number(display_nation.population)}",
             f"Population Growth/min: {abbreviate_number(population_growth_per_minute)}",
-            f"Infrastructure: {display_nation.infrastructure}",
+            f"Infrastructure: {abbreviate_number(display_nation.infrastructure)}",
             f"Area: {abbreviate_number(display_nation.area)} sq km",
             f"GDP: ${abbreviate_number(display_nation.gdp)}",
             f"GDP per Capita: ${abbreviate_number(display_nation.gdp_per_capita)}",
-            f"Tech Gain: {display_nation.tech_income}",
+            f"Tech Gain: {abbreviate_number(display_nation.tech_income)}",
             f"Population Density: {abbreviate_number(display_nation.population_density)} people/sq km",
         ]  
         stats_right = [
@@ -691,14 +691,12 @@ while running:
         
         # NATION SEARCH ------------------
         
-        search_box = pygame.Rect(panel_x + 20, 980, PANEL_WIDTH - 40, 40)
+        search_box = pygame.Rect(panel_x + 20, 950, PANEL_WIDTH - 40, 40)
         pygame.draw.rect(screen, (60, 60, 70), search_box)
         pygame.draw.rect(screen, (255, 255, 255), search_box, 2)
         screen.blit(font.render("Search Nation:", True, (220, 220, 220)),(search_box.x, search_box.y - 25))
         screen.blit(font.render(user_search, True, (255, 255, 255)),(search_box.x + 10, search_box.y + 8))
-        if search_message:
-            color = (100,255,100) if "loaded" in search_message.lower() else (255,100,100)
-
+        screen.blit(font.render(search_message, True, (185, 255, 185)),(search_box.x + 10, search_box.y + 8))
 
     pygame.display.flip()
     clock.tick(FPS)
