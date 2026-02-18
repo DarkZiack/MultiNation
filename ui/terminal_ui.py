@@ -242,14 +242,9 @@ while running:
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
-            if spectated_nation:
-                # Disable all gameplay interaction while spectating
-                if panel_screen in ["buildings", "investments"]:
-                    continue
-
             # Buildings
-
             if panel_screen == "buildings":
+                search_active = False
                 if used_building_slots < nation_obj.building_slots:
                     if commerce_button.collidepoint(event.pos) and (nation_obj.balance >= (100_000 * (1.08 ** nation_obj.commerce_buildings))):
                         nation_obj.commerce_buildings += 1
@@ -311,28 +306,35 @@ while running:
                 warfare_screen_button = pygame.Rect(panel_x + 20, 350, PANEL_WIDTH - 40, 50)
                 if nation_screen_button.collidepoint(event.pos):
                     panel_screen = "nation"
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    spectated_nation = None
+                    search_message = ""
                 elif buildings_screen_button.collidepoint(event.pos):
                     panel_screen = "buildings"
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    spectated_nation = None
+                    search_message = ""
                 elif investments_screen_button.collidepoint(event.pos):
                     panel_screen = "investments"
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    spectated_nation = None
+                    search_message = ""
                 elif tech_screen_button.collidepoint(event.pos):
                     panel_screen = "tech"
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    spectated_nation = None
+                    search_message = ""
                 elif warfare_screen_button.collidepoint(event.pos):
                     panel_screen = "warfare"
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    spectated_nation = None
+                    search_message = ""
                 # Activate search box if clicked
-                
-                search_box = pygame.Rect(panel_x + 20, 450, PANEL_WIDTH - 40, 50)
+                search_box = pygame.Rect(panel_x + 20, 980, PANEL_WIDTH - 40, 50)
                 if search_box.collidepoint(event.pos):
                     search_active = True
                 else:
                     search_active = False
-                
-                if spectated_nation:
-                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
-                    if stop_button.collidepoint(event.pos):
-                        spectated_nation = None
-                        search_message = ""
-
 
 
             elif panel_screen == "buildings":
@@ -345,7 +347,6 @@ while running:
                 research_panel_button = pygame.Rect(panel_x + 20, 620, PANEL_WIDTH - 40, 50)
                 industrial_panel_button = pygame.Rect(panel_x + 20, 690, PANEL_WIDTH - 40, 50)
                 tourism_panel_button = pygame.Rect(panel_x + 20, 760, PANEL_WIDTH - 40, 50)
-                back_button = pygame.Rect(panel_x + 20, 830, PANEL_WIDTH - 40, 40)
         
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
@@ -369,8 +370,9 @@ while running:
             if search_active:
                 if event.key == pygame.K_BACKSPACE:
                     user_search = user_search[:-1]
+                    search_message = ""  # Clear message when deleting too
                 elif event.key == pygame.K_RETURN:
-                    # Reload saves to ensure updated list
+                    # Reload saved nations
                     if os.path.exists(file_path):
                         with open(file_path, "r") as f:
                             saved_nations = json.load(f)
@@ -379,12 +381,12 @@ while running:
                     if user_search in saved_nations:
                         spectated_nation = load_nation(file_path, user_search)
                         search_message = f"Spectating {user_search}"
+                        user_search = ""
                     else:
                         search_message = "Nation not found."
-
-
-
-        # TEXTINPUT for actual typing
+                else:
+                    # Any other key adds a character → clear the message
+                    search_message = ""
         elif event.type == pygame.TEXTINPUT:
             char = event.text
             if char.isdigit():
@@ -514,13 +516,9 @@ while running:
     
     if panel_screen == "nation":
         display_nation = spectated_nation if spectated_nation else nation_obj
-        # Buttons ----
-        
-        
         # Stats ----
-
         stats_left = [
-            f"Nation: {nation_obj.name}",
+            f"Nation: {display_nation.name}",
             f"Income: ${abbreviate_number(display_nation.income)}",
             f"Population: {abbreviate_number(display_nation.population)}",
             f"Population Growth/min: {abbreviate_number(population_growth_per_minute)}",
@@ -690,33 +688,16 @@ while running:
         screen.blit(font.render("Investments", True, (255, 255, 255)), (investments_screen_button.x + 10, investments_screen_button.y + 12))
         screen.blit(font.render("Tech", True, (255, 255, 255)), (tech_screen_button.x + 10, tech_screen_button.y + 12))
         screen.blit(font.render("Warfare", True, (255, 255, 255)), (warfare_screen_button.x + 10, warfare_screen_button.y + 12))
-
-        # ------------------ NATION SEARCH ------------------
-        search_box = pygame.Rect(panel_x + 20, 450, PANEL_WIDTH - 40, 40)
-
+        
+        # NATION SEARCH ------------------
+        
+        search_box = pygame.Rect(panel_x + 20, 980, PANEL_WIDTH - 40, 40)
         pygame.draw.rect(screen, (60, 60, 70), search_box)
         pygame.draw.rect(screen, (255, 255, 255), search_box, 2)
-
-        # Title
-        screen.blit(font.render("Search Nation:", True, (220, 220, 220)),
-                    (search_box.x, search_box.y - 25))
-
-        # Input text
-        screen.blit(font.render(user_search, True, (255, 255, 255)),
-                    (search_box.x + 10, search_box.y + 8))
-
-        # Result message
+        screen.blit(font.render("Search Nation:", True, (220, 220, 220)),(search_box.x, search_box.y - 25))
+        screen.blit(font.render(user_search, True, (255, 255, 255)),(search_box.x + 10, search_box.y + 8))
         if search_message:
             color = (100,255,100) if "loaded" in search_message.lower() else (255,100,100)
-            screen.blit(font.render(search_message, True, color),
-                        (search_box.x, search_box.y + 50))
-            
-        if spectated_nation:
-            stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
-            pygame.draw.rect(screen, (150, 50, 50), stop_button)
-            pygame.draw.rect(screen, (255,255,255), stop_button, 2)
-            screen.blit(font.render("Stop Spectating", True, (255,255,255)),
-                        (stop_button.x + 40, stop_button.y + 8))
 
 
     pygame.display.flip()
