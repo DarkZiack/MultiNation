@@ -12,6 +12,8 @@ from engine.world import regions
 WIDTH, HEIGHT = 1920, 1080
 FPS = 60
 
+spectated_nation = None
+
 population_growth_per_minute = 5000
 file_path = "data/nations_save.json"
 
@@ -20,7 +22,12 @@ PANEL_WIDTH = 350
 PANEL_CLOSED_X = WIDTH
 PANEL_OPEN_X = WIDTH - PANEL_WIDTH
 PANEL_ANIMATION_SPEED = 20
-PANEL_TABS = ["Buildings", "Investments"]
+PANEL_TABS = ["Buildings", "Investments", "Tech", "Warfare"]
+
+# Nation Search
+user_search = ""
+search_active = False
+search_message = ""
 
 # INIT --------------------
 pygame.init()
@@ -235,7 +242,11 @@ while running:
             if exit_button.collidepoint(event.pos):
                 save_nation(nation_obj, file_path)
                 running = False
-            
+            if spectated_nation:
+                # Disable all gameplay interaction while spectating
+                if panel_screen in ["buildings", "investments"]:
+                    continue
+
             # Buildings
 
             if panel_screen == "buildings":
@@ -296,12 +307,33 @@ while running:
                 nation_screen_button = pygame.Rect(panel_x + 20, 70, PANEL_WIDTH -40, 50)
                 buildings_screen_button = pygame.Rect(panel_x + 20, 140, PANEL_WIDTH - 40, 50)
                 investments_screen_button = pygame.Rect(panel_x + 20, 210, PANEL_WIDTH - 40, 50)
+                tech_screen_button = pygame.Rect(panel_x + 20, 280, PANEL_WIDTH - 40, 50)
+                warfare_screen_button = pygame.Rect(panel_x + 20, 350, PANEL_WIDTH - 40, 50)
                 if nation_screen_button.collidepoint(event.pos):
                     panel_screen = "nation"
                 elif buildings_screen_button.collidepoint(event.pos):
                     panel_screen = "buildings"
                 elif investments_screen_button.collidepoint(event.pos):
                     panel_screen = "investments"
+                elif tech_screen_button.collidepoint(event.pos):
+                    panel_screen = "tech"
+                elif warfare_screen_button.collidepoint(event.pos):
+                    panel_screen = "warfare"
+                # Activate search box if clicked
+                
+                search_box = pygame.Rect(panel_x + 20, 450, PANEL_WIDTH - 40, 50)
+                if search_box.collidepoint(event.pos):
+                    search_active = True
+                else:
+                    search_active = False
+                
+                if spectated_nation:
+                    stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+                    if stop_button.collidepoint(event.pos):
+                        spectated_nation = None
+                        search_message = ""
+
+
 
             elif panel_screen == "buildings":
                 commerce_panel_button = pygame.Rect(panel_x + 20, 200, PANEL_WIDTH - 40, 50)
@@ -333,6 +365,24 @@ while running:
                     quantityinfra = float(quantityinfra_input) if quantityinfra_input else 0
                 except ValueError:
                     quantityinfra = 0
+            
+            if search_active:
+                if event.key == pygame.K_BACKSPACE:
+                    user_search = user_search[:-1]
+                elif event.key == pygame.K_RETURN:
+                    # Reload saves to ensure updated list
+                    if os.path.exists(file_path):
+                        with open(file_path, "r") as f:
+                            saved_nations = json.load(f)
+                    else:
+                        saved_nations = {}
+                    if user_search in saved_nations:
+                        spectated_nation = load_nation(file_path, user_search)
+                        search_message = f"Spectating {user_search}"
+                    else:
+                        search_message = "Nation not found."
+
+
 
         # TEXTINPUT for actual typing
         elif event.type == pygame.TEXTINPUT:
@@ -342,6 +392,9 @@ while running:
                     quantityland_input += char
                 else:
                     quantityinfra_input += char
+            if search_active:
+                user_search += event.text
+
     # Update economic stats ----
     # Commerce Index ----
     
@@ -450,38 +503,43 @@ while running:
     pygame.draw.rect(screen, (100, 100, 120), toggle_rect)
     arrow = "<" if panel_is_open else ">"
     screen.blit(font.render(arrow, True, (255, 255, 255)), (toggle_rect.x + 10, toggle_rect.y + 10))
-            
+    used_building_slots = (
+        nation_obj.commerce_buildings + nation_obj.transport_buildings
+        + nation_obj.stability_buildings + nation_obj.healthcare_buildings
+        + nation_obj.education_buildings + nation_obj.safety_buildings + 
+        nation_obj.research_buildings + nation_obj.industrial_buildings + 
+        nation_obj.historic_buildings)
+
+
+    
     if panel_screen == "nation":
+        display_nation = spectated_nation if spectated_nation else nation_obj
         # Buttons ----
         
         
-        
         # Stats ----
-        used_building_slots = (
-        nation_obj.commerce_buildings + nation_obj.transport_buildings
-        + nation_obj.stability_buildings + nation_obj.healthcare_buildings
-        + nation_obj.education_buildings + nation_obj.safety_buildings)
+
         stats_left = [
             f"Nation: {nation_obj.name}",
-            f"Income: ${abbreviate_number(nation_obj.income)}",
-            f"Population: {abbreviate_number(nation_obj.population)}",
+            f"Income: ${abbreviate_number(display_nation.income)}",
+            f"Population: {abbreviate_number(display_nation.population)}",
             f"Population Growth/min: {abbreviate_number(population_growth_per_minute)}",
-            f"Infrastructure: {nation_obj.infrastructure}",
-            f"Area: {abbreviate_number(nation_obj.area)} sq km",
-            f"GDP: ${abbreviate_number(nation_obj.gdp)}",
-            f"GDP per Capita: ${abbreviate_number(nation_obj.gdp_per_capita)}",
-            f"Tech Gain: {nation_obj.tech_income}",
-            f"Population Density: {abbreviate_number(nation_obj.population_density)} people/sq km",
+            f"Infrastructure: {display_nation.infrastructure}",
+            f"Area: {abbreviate_number(display_nation.area)} sq km",
+            f"GDP: ${abbreviate_number(display_nation.gdp)}",
+            f"GDP per Capita: ${abbreviate_number(display_nation.gdp_per_capita)}",
+            f"Tech Gain: {display_nation.tech_income}",
+            f"Population Density: {abbreviate_number(display_nation.population_density)} people/sq km",
         ]  
         stats_right = [
-            f"Building Slots: {used_building_slots}/{nation_obj.building_slots}",
-            f"Stability: {nation_obj.stability}%",
-            f"Commerce: {nation_obj.commerce}%",
-            f"Transport: {nation_obj.transport}%",
-            f"Industrial: {nation_obj.industrial}%",
-            f"Healthcare: {nation_obj.healthcare}%",
-            f"Education: {nation_obj.education}%",
-            f"Safety: {nation_obj.safety}%",
+            f"Building Slots: {used_building_slots}/{display_nation.building_slots}",
+            f"Stability: {display_nation.stability}%",
+            f"Commerce: {display_nation.commerce}%",
+            f"Transport: {display_nation.transport}%",
+            f"Industrial: {display_nation.industrial}%",
+            f"Healthcare: {display_nation.healthcare}%",
+            f"Education: {display_nation.education}%",
+            f"Safety: {display_nation.safety}%",
         ]
         y = 100
         for stat in stats_left:
@@ -517,7 +575,7 @@ while running:
             # First line
             (f"Owned: {nation_obj.commerce_buildings}", (315, 110)),
             (f"Commerce: {nation_obj.commerce}%", (315, 150)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.commerce_buildings * 3.33) * (nation_obj.transport-100) + ((nation_obj.industrial-100)/2)) / commerce_development)+(nation_obj.commerce_buildings * 10000) / commerce_development + 100 - nation_obj.commerce)}%", (315, 190)),
+            (f"+ {round(100 * math.sqrt((((nation_obj.commerce_buildings+1) * 3.33) * (nation_obj.transport-100) + ((nation_obj.industrial-100)/2)) / commerce_development)+((nation_obj.commerce_buildings+1) * 10000) / commerce_development + 100 - nation_obj.commerce)}%", (315, 190)),
             (f"Owned: {nation_obj.transport_buildings}", (315, 460)),
             (f"Transport: {nation_obj.transport}%", (315, 500)),
             (f"+ {round((100 * math.sqrt(((roads+1 + bonus_roads) * transportation_eff * 200)/ transportation_development)+ (((roads+1 + bonus_roads) * transportation_eff * 10000)/ transportation_development))* (1+ bonus_road_output / 100+ national_highway_system / 4) + 100 - nation_obj.transport,2)}%", (315, 540)),
@@ -578,7 +636,7 @@ while running:
         screen.blit(font.render(f"Purchase {abbreviate_number(float(quantityinfra_input) if quantityinfra_input else 0)} Infrastructure for ${abbreviate_number(infrastructure_cost_reduction* (float(quantityinfra_input) if quantityinfra_input else 0) * (nation_obj.infrastructure / 100) ** 2)}", True, (255, 255, 255)),(infrastructure_button.x + 20, infrastructure_button.y + 15))
 
         stats_right = [
-            (f"Building Slots: {used_building_slots}/{nation_obj.building_slots}", (500, 30)),
+            (f"Building Slots: {used_building_slots}/{nation_obj.building_slots}", (1135, 30)),
             (f"Owned: {nation_obj.area}", (110,460)),
             (f"Owned: {nation_obj.infrastructure}", (720, 460)),
             (f"Cost Reduction: {abbreviate_number(max((1 - infrastructure_cost_reduction) * 100, 0))}%", (720, 500)),
@@ -599,7 +657,11 @@ while running:
         draw_text(screen, "Press TAB to switch", (100, 680), color=(220, 220, 220))
         draw_text(screen, quantityland_input, (105, 650))
         draw_text(screen, quantityinfra_input, (725, 650))
-        
+    
+    elif panel_screen == "tech":
+        print("Tech screen - coming soon!")
+    elif panel_screen == "warfare":
+        print("Warfare screen - coming soon!")
     if panel_x < WIDTH:  # Only draw panel background and contents when open/visible
         # Panel background
         pygame.draw.rect(screen, (40, 40, 50), pygame.Rect(panel_x, 0, PANEL_WIDTH, HEIGHT))
@@ -614,15 +676,49 @@ while running:
         nation_screen_button = pygame.Rect(panel_x + 20, 70, PANEL_WIDTH - 40, 50)
         buildings_screen_button = pygame.Rect(panel_x + 20, 140, PANEL_WIDTH - 40, 50)
         investments_screen_button = pygame.Rect(panel_x + 20, 210, PANEL_WIDTH - 40, 50)
+        tech_screen_button = pygame.Rect(panel_x + 20, 280, PANEL_WIDTH - 40, 50)
+        warfare_screen_button = pygame.Rect(panel_x + 20, 350, PANEL_WIDTH - 40, 50)
         pygame.draw.rect(screen, (200, 80, 80), exit_button)
         pygame.draw.rect(screen, (80, 120, 200), nation_screen_button)
         pygame.draw.rect(screen, (80, 120, 200), buildings_screen_button)
         pygame.draw.rect(screen, (80, 120, 200), investments_screen_button)
+        pygame.draw.rect(screen, (80, 120, 200), tech_screen_button)
+        pygame.draw.rect(screen, (80, 120, 200), warfare_screen_button)
         screen.blit(font.render("Save & Exit", True, (255, 255, 255)),(exit_button.x + 90, exit_button.y + 12))
         screen.blit(font.render("Nation", True, (255, 255, 255)), (nation_screen_button.x + 10, nation_screen_button.y + 12))
         screen.blit(font.render("Buildings", True, (255, 255, 255)), (buildings_screen_button.x + 10, buildings_screen_button.y + 12))
         screen.blit(font.render("Investments", True, (255, 255, 255)), (investments_screen_button.x + 10, investments_screen_button.y + 12))
-        
+        screen.blit(font.render("Tech", True, (255, 255, 255)), (tech_screen_button.x + 10, tech_screen_button.y + 12))
+        screen.blit(font.render("Warfare", True, (255, 255, 255)), (warfare_screen_button.x + 10, warfare_screen_button.y + 12))
+
+        # ------------------ NATION SEARCH ------------------
+        search_box = pygame.Rect(panel_x + 20, 450, PANEL_WIDTH - 40, 40)
+
+        pygame.draw.rect(screen, (60, 60, 70), search_box)
+        pygame.draw.rect(screen, (255, 255, 255), search_box, 2)
+
+        # Title
+        screen.blit(font.render("Search Nation:", True, (220, 220, 220)),
+                    (search_box.x, search_box.y - 25))
+
+        # Input text
+        screen.blit(font.render(user_search, True, (255, 255, 255)),
+                    (search_box.x + 10, search_box.y + 8))
+
+        # Result message
+        if search_message:
+            color = (100,255,100) if "loaded" in search_message.lower() else (255,100,100)
+            screen.blit(font.render(search_message, True, color),
+                        (search_box.x, search_box.y + 50))
+            
+        if spectated_nation:
+            stop_button = pygame.Rect(panel_x + 20, 510, PANEL_WIDTH - 40, 40)
+            pygame.draw.rect(screen, (150, 50, 50), stop_button)
+            pygame.draw.rect(screen, (255,255,255), stop_button, 2)
+            screen.blit(font.render("Stop Spectating", True, (255,255,255)),
+                        (stop_button.x + 40, stop_button.y + 8))
+
+
     pygame.display.flip()
     clock.tick(FPS)
 
