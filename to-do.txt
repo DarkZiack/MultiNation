@@ -16,4 +16,41 @@ Millitary Base = infra / 500
 Millitary Airbase = infra / 500
 Naval Base = infra / 500
 
+    nation_obj.transport_buildings
+    nation_obj.transport = round(100 * math.sqrt(((nation_obj.transport_buildings) * 4.55)
+                        / transportation_development)+(nation_obj.transport_buildings * 10000) / transportation_development + 100,2)
+    
+    
+    
+    # Education Index ----
+    education_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    nation_obj.education = round(100 * math.sqrt(((nation_obj.education_buildings+nation_obj.historic_buildings) * 5.33 * nation_obj.safety)
+                        / education_development)+(nation_obj.education_buildings * 10000 + nation_obj.historic_buildings * 5000) / education_development + 100,2)
+    
+    # Safety Index ----
+    
+    safety_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.safety = round(100 * math.sqrt((nation_obj.safety_buildings * 3.35)
+                        / safety_development)+(nation_obj.safety_buildings * 10000) / safety_development + 100,2)
+    
+    # Healthcare Index
+    
+    healthcare_development = 2 * (nation_obj.population/100)
+    
+    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 4.55)
+                        / healthcare_development)+(nation_obj.healthcare_buildings * 10000) / healthcare_development + 100,2)
+    # Industrial Index
+    industrial_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    
+    nation_obj.industrial = round(100 * math.sqrt((nation_obj.industrial_buildings * 2.9)
+                        / industrial_development)+(nation_obj.industrial_buildings * 10000) / industrial_development + 100,2)
+    
+    # Stability Index
+    
+    stability_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
+    
+    nation_obj.stability = round(
+        ((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)
+         + ((100 * math.sqrt(((nation_obj.stability_buildings) * 1000)/ stability_development))) + 100,2)
 

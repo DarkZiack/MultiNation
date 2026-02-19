@@ -435,7 +435,7 @@ while running:
         + (development + nation_obj.area) / 10)
     transportation_development = max(transportation_development, 1)
     nation_obj.transport_buildings
-    nation_obj.transport = round(100 * math.sqrt(((nation_obj.transport_buildings) * 4.53)
+    nation_obj.transport = round(100 * math.sqrt(((nation_obj.transport_buildings) * 4.55)
                         / transportation_development)+(nation_obj.transport_buildings * 10000) / transportation_development + 100,2)
     
     
@@ -456,12 +456,12 @@ while running:
     
     healthcare_development = 2 * (nation_obj.population/100)
     
-    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 2.95)
+    nation_obj.healthcare = round(100 * math.sqrt((nation_obj.healthcare_buildings * 4.55)
                         / healthcare_development)+(nation_obj.healthcare_buildings * 10000) / healthcare_development + 100,2)
     # Industrial Index
     industrial_development = 2 * (nation_obj.infrastructure + (nation_obj.area / 10))
     
-    nation_obj.industrial = round(100 * math.sqrt((nation_obj.industrial_buildings * 1.88)
+    nation_obj.industrial = round(100 * math.sqrt((nation_obj.industrial_buildings * 2.9)
                         / industrial_development)+(nation_obj.industrial_buildings * 10000) / industrial_development + 100,2)
     
     # Stability Index
@@ -486,13 +486,13 @@ while running:
     nation_obj.tech_income = (nation_obj.research_buildings * (100 *nation_obj.education * 0.8))
     
     # Population Stats ----
-    population_growth_per_minute = round((nation_obj.population * 0.015) * (nation_obj.healthcare / 100), 1)
+    population_growth_per_minute = round((nation_obj.population * 0.0155) * (nation_obj.healthcare / 100), 0)
     nation_obj.population_density = nation_obj.calculate_density()
     if timer_minute >= 60:
-        save_nation(nation_obj, file_path) 
         nation_obj.population += population_growth_per_minute 
         nation_obj.balance += (nation_obj.income/1440)
         nation_obj.tech_balance += (nation_obj.tech_income/1440)
+        save_nation(nation_obj, file_path) 
         timer_minute = 0
     
     # Draw ----
@@ -589,17 +589,17 @@ while running:
             (f"+ {round(100 * math.sqrt((((nation_obj.commerce_buildings+1) * 3.33) * (nation_obj.transport-100) + ((nation_obj.industrial-100)/2)) / commerce_development)+((nation_obj.commerce_buildings+1) * 10000) / commerce_development + 100 - nation_obj.commerce)}%", (315, 190)),
             (f"Owned: {nation_obj.transport_buildings}", (315, 460)),
             (f"Transport: {nation_obj.transport}%", (315, 500)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.transport_buildings+1) * 4.53)/ transportation_development)+((nation_obj.transport_buildings+1) * 10000) / transportation_development + 100 - nation_obj.transport,2)}%", (315, 540)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.transport_buildings+1) * 4.55)/ transportation_development)+((nation_obj.transport_buildings+1) * 10000) / transportation_development + 100 - nation_obj.transport,2)}%", (315, 540)),
             (f"Owned: {nation_obj.industrial_buildings}", (315, 810)),
             (f"Industrial: {nation_obj.industrial}%", (315, 850)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.industrial_buildings+1) * 1.88)/ industrial_development)+((nation_obj.industrial_buildings+1) * 10000) / industrial_development + 100 - nation_obj.industrial,2)}%", (315, 890)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.industrial_buildings+1) * 2.9)/ industrial_development)+((nation_obj.industrial_buildings+1) * 10000) / industrial_development + 100 - nation_obj.industrial,2)}%", (315, 890)),
             # Second line
             (f"Owned: {nation_obj.education_buildings}", (935, 110)),
             (f"Education: {nation_obj.education}%", (935, 150)),
             (f"+ {round(100 * math.sqrt((((nation_obj.education_buildings+1)+nation_obj.historic_buildings) * 5.33 * nation_obj.safety)/ education_development)+((nation_obj.education_buildings+1) * 10000 + nation_obj.historic_buildings * 5000) / education_development + 100 - (100 * math.sqrt(((nation_obj.education_buildings+(nation_obj.historic_buildings)) * 5.33 * nation_obj.safety)/ education_development)+(nation_obj.education_buildings * 10000 + (nation_obj.historic_buildings) * 5000) / education_development + 100),2)}%", (935, 190)),
             (f"Owned: {nation_obj.safety_buildings}", (935, 460)),
             (f"Safety: {nation_obj.safety}%", (935, 500)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.safety_buildings+1) * 3.33) / safety_development)+((nation_obj.safety_buildings+1) * 10000) / safety_development + 100 - nation_obj.safety,2)}%", (935, 540)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.safety_buildings+1) * 3.35) / safety_development)+((nation_obj.safety_buildings+1) * 10000) / safety_development + 100 - nation_obj.safety,2)}%", (935, 540)),
             (f"Owned: {nation_obj.historic_buildings}", (935, 810)),
             (f"Education: {nation_obj.education}%", (935, 850)),
             (f"+ {round(100 * math.sqrt(((nation_obj.education_buildings+(nation_obj.historic_buildings+1)) * 5.33 * nation_obj.safety)/ education_development)+(nation_obj.education_buildings * 10000 + (nation_obj.historic_buildings+1) * 5000) / education_development + 100 - (100 * math.sqrt(((nation_obj.education_buildings+(nation_obj.historic_buildings)) * 5.33 * nation_obj.safety)/ education_development)+(nation_obj.education_buildings * 10000 + (nation_obj.historic_buildings) * 5000) / education_development + 100),2)}%", (935, 890)),
@@ -609,7 +609,7 @@ while running:
             (f"Tech Gain + {round(((nation_obj.research_buildings+1) * (100 *nation_obj.education * 0.8)) - ((nation_obj.research_buildings) * (100 *nation_obj.education * 0.8)),2)}", (1555, 190)),
             (f"Owned: {nation_obj.healthcare_buildings}", (1555, 460)),
             (f"Healthcare {nation_obj.healthcare}%", (1555, 500)),
-            (f"+ {round(100 * math.sqrt(((nation_obj.healthcare_buildings+1) * 3.33) / healthcare_development)+((nation_obj.healthcare_buildings+1) * 10000) / healthcare_development + 100 - nation_obj.healthcare,2)}%", (1555, 540)),
+            (f"+ {round(100 * math.sqrt(((nation_obj.healthcare_buildings+1) * 4.55) / healthcare_development)+((nation_obj.healthcare_buildings+1) * 10000) / healthcare_development + 100 - nation_obj.healthcare,2)}%", (1555, 540)),
             (f"Owned: {nation_obj.stability_buildings}", (1555, 810)),
             (f"Stability: {nation_obj.stability}%", (1555, 850)),
             (f"+ {round(((nation_obj.commerce + nation_obj.transport + nation_obj.education + nation_obj.healthcare + nation_obj.safety / 5) / stability_development)+ ((100 * math.sqrt(((nation_obj.stability_buildings+1) * 1000)/ stability_development))) + 100 - nation_obj.stability,2)}%", (1555, 890)),
