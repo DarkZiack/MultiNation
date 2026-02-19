@@ -2,7 +2,7 @@ import pygame
 import os
 import json
 import math
-
+import time
 from data.nation import nation
 from data.save_load import load_nation, save_nation
 from engine.num_format import abbreviate_number
@@ -84,6 +84,20 @@ while not setup_done:
                     elif name in saved_nations:
                         message = f"Welcome back, {name}!"
                         nation_obj = load_nation(file_path, name)
+                        print("loaded")
+                        if nation_obj and hasattr(nation_obj, 'last_save_time'):
+                            current_time = time.time()
+                            elapsed_seconds = current_time - nation_obj.last_save_time
+                            elapsed_minutes = elapsed_seconds / 60 * 1000000
+                            print("wooooooorkin halfway")
+                            print(elapsed_minutes)
+                            if elapsed_minutes >= 1:
+                                proc_mins = min(elapsed_minutes, 1440) # Cap at 24 hours
+                                # Use your growth formulas
+                                print("wooooooorkin")
+                                nation_obj.population += (nation_obj.population * 0.015) * (nation_obj.healthcare / 100) * (proc_mins / 60)
+                                nation_obj.balance +=(nation_obj.income / 1440) * proc_mins
+                                nation_obj.tech_balance += (nation_obj.tech_income / 1440) * proc_mins
                         setup_done = True
                     elif len(name) > 15:
                         message = "Nation name too long (max 15 characters)."

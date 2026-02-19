@@ -1,7 +1,7 @@
 from data.nation import nation
 import json
 import os
-
+import time
 """
 (self, name, population, area, income, commerce, commerce_buildings, 
 transport, transport_buildings, gdp, gdp_per_capita, tax, world_region=None):
@@ -64,7 +64,7 @@ def save_nation(nation_obj, file_path):
             data = json.load(f)
     else:
         data = {}
-
+    nation_obj.last_save_time = time.time()
     # This line handles BOTH cases:
     # - updates if name exists
     # - creates if it doesn't
@@ -98,6 +98,7 @@ def save_nation(nation_obj, file_path):
         "historic_buildings": nation_obj.historic_buildings,
         "industrial": nation_obj.industrial,
         "industrial_buildings": nation_obj.industrial_buildings,
+        "last_save_time": nation_obj.last_save_time
     }
 
     with open(file_path, 'w') as f:

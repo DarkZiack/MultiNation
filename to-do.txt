@@ -9,6 +9,8 @@
 
     + Leaderboard
 
+    + Offline Progress
+
 + War Tab + 3 Buildings
 Millitary Base = infra / 500
 Millitary Airbase = infra / 500

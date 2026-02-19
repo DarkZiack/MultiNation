@@ -1,8 +1,10 @@
+import time
+
 class nation:
     def __init__(self, name, population, infrastructure, area, income, balance, tech_income, tech_balance, commerce, commerce_buildings, 
                 transport, transport_buildings, stability, stability_buildings, healthcare, healthcare_buildings
                 , education, education_buildings, safety, safety_buildings , research_buildings, historic_buildings, industrial,
-                industrial_buildings, gdp, gdp_per_capita, tax, world_region=None):
+                industrial_buildings, gdp, gdp_per_capita, tax, world_region=None, last_save_time=None):
         
         self.name = name
         self.population = population
@@ -33,6 +35,7 @@ class nation:
         self.historic_buildings = historic_buildings
         self.industrial = industrial
         self.industrial_buildings = industrial_buildings
+        self.last_save_time = last_save_time if last_save_time else time.time()
 
     def calculate_density(self):
         if self.area > 0:
