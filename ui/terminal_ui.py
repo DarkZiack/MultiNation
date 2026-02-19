@@ -84,20 +84,21 @@ while not setup_done:
                     elif name in saved_nations:
                         message = f"Welcome back, {name}!"
                         nation_obj = load_nation(file_path, name)
-                        print("loaded")
                         if nation_obj and hasattr(nation_obj, 'last_save_time'):
                             current_time = time.time()
                             elapsed_seconds = current_time - nation_obj.last_save_time
-                            elapsed_minutes = elapsed_seconds / 60 * 1000000
-                            print("wooooooorkin halfway")
-                            print(elapsed_minutes)
+                            elapsed_minutes = elapsed_seconds / 60
                             if elapsed_minutes >= 1:
-                                proc_mins = min(elapsed_minutes, 1440) # Cap at 24 hours
-                                # Use your growth formulas
-                                print("wooooooorkin")
-                                nation_obj.population += (nation_obj.population * 0.015) * (nation_obj.healthcare / 100) * (proc_mins / 60)
-                                nation_obj.balance +=(nation_obj.income / 1440) * proc_mins
-                                nation_obj.tech_balance += (nation_obj.tech_income / 1440) * proc_mins
+                                proc_mins = min(int(elapsed_minutes), 1440)  # Cap at 24 hours and use integer minutes
+                                # Compute gains
+                                pop_gain = (nation_obj.population * 0.015) * (nation_obj.healthcare / 100) * proc_mins
+                                money_gain = (nation_obj.income / 1440) * proc_mins
+                                tech_gain = (nation_obj.tech_income / 1440) * proc_mins
+                                nation_obj.population += pop_gain
+                                nation_obj.balance += money_gain
+                                nation_obj.tech_balance += tech_gain
+                                # Show a concise offline summary to the player
+                                message = f"Welcome back, {name}! Away {proc_mins}m: +{abbreviate_number(pop_gain)} pop, +${abbreviate_number(money_gain)}, +{abbreviate_number(tech_gain)} tech"
                         setup_done = True
                     elif len(name) > 15:
                         message = "Nation name too long (max 15 characters)."
@@ -236,8 +237,7 @@ while running:
     if timer == 62:
         timer_minute += 1
         timer = 0
-    save_nation(nation_obj, file_path)
-
+    
     # Panel Animation ----
     target_x = PANEL_OPEN_X if panel_is_open else PANEL_CLOSED_X
     if panel_x != target_x:
@@ -489,6 +489,7 @@ while running:
     population_growth_per_minute = round((nation_obj.population * 0.015) * (nation_obj.healthcare / 100), 1)
     nation_obj.population_density = nation_obj.calculate_density()
     if timer_minute >= 60:
+        save_nation(nation_obj, file_path) 
         nation_obj.population += population_growth_per_minute 
         nation_obj.balance += (nation_obj.income/1440)
         nation_obj.tech_balance += (nation_obj.tech_income/1440)

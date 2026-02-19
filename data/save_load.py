@@ -149,7 +149,8 @@ def load_nation(file_path, name):
         n["gdp"],
         n["gdp_per_capita"],
         n["tax"],
-        n.get("world_region")
+        n.get("world_region"),
+        n.get("last_save_time")
     )
 
 # Ensure the save exists when this module is imported
