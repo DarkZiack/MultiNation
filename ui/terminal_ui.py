@@ -822,45 +822,57 @@ while running:
         draw_text(screen, quantityinfra_input, (725, 650))
     
     elif panel_screen == "tech":
-        # Render tech upgrade panel
-        tech_start_x = 100
-        tech_start_y = 150
-        tech_width = 500
-        tech_height = 48
-        gap = 12
-        tech_items = [
-            ("commerce", "Commerce"),
-            ("transport", "Transport"),
-            ("industrial", "Industry"),
-            ("education", "Education"),
-            ("healthcare", "Healthcare"),
-            ("safety", "Safety"),
-            ("research", "Research"),
-            ("infrastructure_cost", "Infrastructure Cost Reduction"),
-            ("tech_gain", "Tech Gain"),
-            ("tech_cost", "Tech Cost Discount"),
-            ("building_slots", "Building Slots"),
-            ("land_cost", "Land Cost Reduction"),
-        ]
+            tech_start_x, tech_start_y = 100, 150
+            tech_width, tech_height, gap = 500, 48, 12
+            
+            tech_items = [
+                ("commerce", "Commerce"), ("transport", "Transport"),
+                ("industrial", "Industry"), ("education", "Education"),
+                ("healthcare", "Healthcare"), ("safety", "Safety"),
+                ("research", "Research"), ("infrastructure_cost", "Infra Cost Reduction"),
+                ("tech_gain", "Tech Gain"), ("tech_cost", "Tech Cost Discount"),
+                ("building_slots", "Building Slots"), ("land_cost", "Land Cost Reduction"),
+            ]
 
-        for i, (key, label) in enumerate(tech_items):
-            y = tech_start_y + i * (tech_height + gap)
-            rect = pygame.Rect(tech_start_x, y, tech_width, tech_height)
-            pygame.draw.rect(screen, (60, 60, 70), rect)
-            level = nation_obj.get_tech_level(key)
-            next_cost = nation_obj.next_level_cost(key, base_cost=TECH_BASE_COSTS.get(key, 1000))
-            buy1_rect = pygame.Rect(tech_start_x + tech_width + 20, y, 100, tech_height)
-            buy5_rect = pygame.Rect(tech_start_x + tech_width + 140, y, 100, tech_height)
-            # Draw buttons (wider)
-            pygame.draw.rect(screen, (80, 160, 80) if next_cost > 0 else (80,80,80), buy1_rect)
-            pygame.draw.rect(screen, (80, 120, 200) if next_cost > 0 else (80,80,80), buy5_rect)
-            # Text
-            screen.blit(font.render(f"{label}", True, (255,255,255)), (rect.x + 10, rect.y + 8))
-            screen.blit(font.render(f"Level: {level}", True, (220,220,220)), (rect.x + 200, rect.y + 8))
-            cost_text = f"1: ${abbreviate_number(next_cost)} / 5: ${abbreviate_number(nation_obj.total_cost_for_levels(key, 5, base_cost=TECH_BASE_COSTS.get(key,1000)))}"
-            screen.blit(font.render(cost_text, True, (220,220,220)), (rect.x + 260, rect.y + 8))
-            screen.blit(font.render("Buy 1 (T)", True, (0,0,0)), (buy1_rect.x + 8, buy1_rect.y + 12))
-            screen.blit(font.render("Buy 5 (T)", True, (255,255,255)), (buy5_rect.x + 8, buy5_rect.y + 12))
+            for i, (key, label) in enumerate(tech_items):
+                y = tech_start_y + i * (tech_height + gap)
+                rect = pygame.Rect(tech_start_x, y, tech_width, tech_height)
+                
+                # --- Logic ---
+                level = nation_obj.get_tech_level(key)
+                current_mult = nation_obj.get_tech_multiplier(key)
+                # Preview benefit of next level
+                next_mult = 1 + ((level + 1) * 0.05) if "cost" not in key else 1 - ((level + 1) * 0.005)
+                
+                next_cost = nation_obj.next_level_cost(key, base_cost=TECH_BASE_COSTS.get(key, 1000))
+                cost_5 = nation_obj.total_cost_for_levels(key, 5, base_cost=TECH_BASE_COSTS.get(key, 1000))
+
+                # --- Drawing ---
+                pygame.draw.rect(screen, (60, 60, 70), rect)
+                buy1_rect = pygame.Rect(tech_start_x + tech_width + 20, y, 110, tech_height)
+                buy5_rect = pygame.Rect(tech_start_x + tech_width + 140, y, 110, tech_height)
+
+                # Button Colors (Greens out if you can afford it)
+                can_afford_1 = nation_obj.tech_balance >= next_cost
+                can_afford_5 = nation_obj.tech_balance >= cost_5
+                
+                pygame.draw.rect(screen, (80, 160, 80) if can_afford_1 else (60, 60, 60), buy1_rect)
+                pygame.draw.rect(screen, (80, 120, 200) if can_afford_5 else (60, 60, 60), buy5_rect)
+
+                # Label & Level
+                screen.blit(font.render(f"{label}", True, (255, 255, 255)), (rect.x + 10, rect.y + 8))
+                
+                # Multiplier Preview (The "Smart" part)
+                mult_text = f"{round(current_mult, 2)}x -> {round(next_mult, 2)}x"
+                screen.blit(font.render(mult_text, True, (200, 255, 200)), (rect.x + 180, rect.y + 8))
+
+                # Costs
+                cost_text = f"Cost: {abbreviate_number(next_cost)} T"
+                screen.blit(font.render(cost_text, True, (220, 220, 220)), (rect.x + 330, rect.y + 8))
+
+                # Button Labels
+                screen.blit(font.render("Buy +1", True, (255, 255, 255)), (buy1_rect.x + 15, buy1_rect.y + 12))
+                screen.blit(font.render("Buy +5", True, (255, 255, 255)), (buy5_rect.x + 15, buy5_rect.y + 12))
         
     elif panel_screen == "warfare":
         print("Warfare screen - coming soon!")
