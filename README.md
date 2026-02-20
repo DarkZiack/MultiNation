@@ -8,33 +8,33 @@ Built with Python and PyGame, this project lets you customize your own simulatio
 
 ## Features
 
-**Complex Economic Engine: ** 
+**Complex Economic Engine:** 
    - Manage GDP, income per capita, and tax rates influenced by your infrastructure and building levels.
 
-**Dynamic Building System: ** 
+**Dynamic Building System:** 
    - Construct specialized zones for Commerce, Transport, Healthcare, Education, and Industry.
 
-**Territorial Expansion: **
+**Territorial Expansion:**
    - Invest in land and infrastructure to increase your building capacity and population density.
 
-**Global Leaderboards: **
+**Global Leaderboards:**
    - Compare your nation's GDP and Population against other players in the save file.
 
-**Offline Progression: ** 
+**Offline Progression:** 
    - Your nation continues to grow while you are away. Earn taxes and tech points based on the time elapsed since your last session.
 
-**Advanced Tech Tree: ** 
+**Advanced Tech Tree:** 
    - Spend research points to unlock 12+ unique upgrades that boost efficiency and reduce costs.
 
 ### Tech Tree Upgrades
 
-**Logistics & Industry: ** Enhance transport networks and industrial output.
+**Logistics & Industry:** Enhance transport networks and industrial output.
 
-**Social Development: ** Improve healthcare, safety, and education indexes.
+**Social Development:** Improve healthcare, safety, and education indexes.
 
-**Macro-Efficiency: ** Reduce infrastructure costs and boost tech-point generation.
+**Macro-Efficiency:** Reduce infrastructure costs and boost tech-point generation.
 
-**Urban Planning: **Unlock extra building slots to maximize your territory.
+**Urban Planning:**Unlock extra building slots to maximize your territory.
 
 ---
 
