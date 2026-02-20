@@ -34,7 +34,7 @@ Built with Python and PyGame, this project lets you customize your own simulatio
 
 **Macro-Efficiency:** Reduce infrastructure costs and boost tech-point generation.
 
-**Urban Planning:**Unlock extra building slots to maximize your territory.
+**Urban Planning:** Unlock extra building slots to maximize your territory.
 
 ---
 
