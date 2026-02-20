@@ -65,41 +65,8 @@ def save_nation(nation_obj, file_path):
     else:
         data = {}
     nation_obj.last_save_time = time.time()
-    # This line handles BOTH cases:
-    # - updates if name exists
-    # - creates if it doesn't
-    data[nation_obj.name] = {
-        "name": nation_obj.name,
-        "population": nation_obj.population,
-        "population_density": nation_obj.population_density,
-        "income": nation_obj.income,
-        "balance": nation_obj.balance,
-        "tech_income": nation_obj.tech_income,
-        "tech": nation_obj.tech_balance,
-        "gdp": nation_obj.gdp,
-        "gdp_per_capita": nation_obj.gdp_per_capita,
-        "area": nation_obj.area,
-        "infrastructure": nation_obj.infrastructure,
-        "world_region": nation_obj.world_region,
-        "tax": nation_obj.tax,
-        "commerce": nation_obj.commerce,
-        "commerce_buildings": nation_obj.commerce_buildings,
-        "transport": nation_obj.transport,
-        "transport_buildings": nation_obj.transport_buildings,
-        "stability": nation_obj.stability,
-        "stability_buildings": nation_obj.stability_buildings,
-        "healthcare": nation_obj.healthcare,
-        "healthcare_buildings": nation_obj.healthcare_buildings,
-        "education": nation_obj.education,
-        "education_buildings": nation_obj.education_buildings,
-        "safety": nation_obj.safety,
-        "safety_buildings": nation_obj.safety_buildings,
-        "research_buildings": nation_obj.research_buildings,
-        "historic_buildings": nation_obj.historic_buildings,
-        "industrial": nation_obj.industrial,
-        "industrial_buildings": nation_obj.industrial_buildings,
-        "last_save_time": nation_obj.last_save_time
-    }
+    # Use nation serialization helper for consistency
+    data[nation_obj.name] = nation_obj.to_dict()
 
     with open(file_path, 'w') as f:
         json.dump(data, f, indent=4)
@@ -116,42 +83,45 @@ def load_nation(file_path, name):
         data = json.load(f)
 
     if name not in data:
-        # Nation does not exist → create new with default values
-        return nation(name, 1000000, 1000, 1000, 100, 100, 5, 10, 100, 5, 5, 5, 5, 5, 100, 100, 10, "Unknown")
+        # Nation does not exist → create new with sensible defaults
+        defaults = {
+            "name": name,
+            "population": 1000000,
+            "infrastructure": 1000,
+            "area": 1000,
+            "income": 100,
+            "balance": 100,
+            "tech_income": 5,
+            "tech": 10,
+            "commerce": 100,
+            "commerce_buildings": 5,
+            "transport": 5,
+            "transport_buildings": 5,
+            "stability": 5,
+            "stability_buildings": 5,
+            "healthcare": 100,
+            "healthcare_buildings": 100,
+            "education": 10,
+            "education_buildings": 0,
+            "safety": 100,
+            "safety_buildings": 0,
+            "research_buildings": 0,
+            "historic_buildings": 0,
+            "industrial": 100,
+            "industrial_buildings": 0,
+            "gdp": 100,
+            "gdp_per_capita": 100,
+            "tax": 10,
+            "world_region": "Unknown",
+        }
+        # persist the default so next load finds it
+        data[name] = defaults
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+        return nation.from_dict(defaults)
 
     n = data[name]
-
-    return nation(
-        n["name"],
-        n["population"],
-        n["infrastructure"],
-        n["area"],
-        n["income"],
-        n["balance"],
-        n["tech_income"],
-        n["tech"],
-        n["commerce"],
-        n["commerce_buildings"],
-        n["transport"],
-        n["transport_buildings"],
-        n["stability"],
-        n["stability_buildings"],
-        n["healthcare"],
-        n["healthcare_buildings"],
-        n["education"],
-        n["education_buildings"],
-        n["safety"],
-        n["safety_buildings"],
-        n["research_buildings"],
-        n["historic_buildings"],
-        n["industrial"],
-        n["industrial_buildings"],
-        n["gdp"],
-        n["gdp_per_capita"],
-        n["tax"],
-        n.get("world_region"),
-        n.get("last_save_time")
-    )
+    return nation.from_dict(n)
 
 # Ensure the save exists when this module is imported
 ensure_save_exists(file_path)
